@@ -1,0 +1,51 @@
+.canvas {
+  height: 640px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.canvas :global(.react-flow__node) {
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--foreground);
+  transition: opacity 0.3s;
+}
+
+.layerNode {
+  background: transparent !important;
+  border: 0 !important;
+  font-weight: 600;
+  color: var(--muted) !important;
+  text-align: left;
+}
+
+.companyNode {
+  border-radius: 10px !important;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.bigtech {
+  background: var(--bigtech-soft) !important;
+  border: 1px solid var(--bigtech) !important;
+}
+
+.startup {
+  background: var(--startup-soft) !important;
+  border: 1px solid var(--startup) !important;
+}
+
+.directionNode {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  width: 200px !important;
+  font-weight: 600;
+}
+
+.canvas :global(.react-flow__handle) {
+  opacity: 0;
+}

@@ -1,0 +1,73 @@
+.panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(400px, 100vw);
+  padding: 32px 24px;
+  overflow-y: auto;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  box-shadow: -12px 0 32px rgb(0 0 0 / 0.12);
+  z-index: 10;
+}
+
+.close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  border: 0;
+  background: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.kicker {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.panel h2 {
+  margin-top: 4px;
+  font-size: 1.5rem;
+}
+
+.problem {
+  margin-top: 12px;
+}
+
+.unverified {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: var(--startup);
+}
+
+.section {
+  margin-top: 24px;
+}
+
+.section h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.section ul {
+  padding-left: 18px;
+}
+
+.section li {
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.section time {
+  color: var(--muted);
+}
+
+.empty {
+  font-size: 0.9rem;
+  color: var(--muted);
+}

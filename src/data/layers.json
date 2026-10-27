@@ -1,0 +1,8 @@
+[
+  { "id": "compute", "name": "Compute and chips", "definition": "The hardware AI runs on." },
+  { "id": "cloud", "name": "Cloud", "definition": "Rented computing power, so companies don't need their own data centers." },
+  { "id": "models", "name": "Foundation models", "definition": "Companies that train large AI models others build on." },
+  { "id": "tools", "name": "Infrastructure and tools", "definition": "What developers use to build products with models." },
+  { "id": "applications", "name": "Applications", "definition": "Products people and businesses use every day." },
+  { "id": "physical", "name": "Physical AI", "definition": "AI that acts in the physical world, such as robots." }
+]

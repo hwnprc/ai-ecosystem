@@ -1,0 +1,12 @@
+[
+  {
+    "direction": "agents",
+    "startup": "Forward-deployed engineer or PM intern, owning a customer end to end.",
+    "bigtech": "PM intern on an agent platform, learning to ship at scale."
+  },
+  {
+    "direction": "physical-ai",
+    "startup": "Forward-deployed role making robots work on site. My humanoid robotics internship is relevant.",
+    "bigtech": "Product or research intern on robotics or simulation teams."
+  }
+]
