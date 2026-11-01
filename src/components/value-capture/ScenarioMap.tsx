@@ -40,7 +40,7 @@ export default function ScenarioMap() {
 
   return (
     <section className={styles.sec} aria-labelledby="h-scn">
-      <span className={styles.eyebrow}>06</span>
+      <span className={styles.eyebrow}>Scenarios</span>
       <h2 id="h-scn" className={styles.h2}>Where could the next three years go?</h2>
       <p className={styles.lead}>Drag the dot. Two numbers decide the scenario. The odds are the author&apos;s personal guess.</p>
       <div

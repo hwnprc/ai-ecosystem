@@ -16,7 +16,7 @@ export default function Indicators() {
 
   return (
     <section className={styles.sec} aria-labelledby="h-ind">
-      <span className={styles.eyebrow}>05</span>
+      <span className={styles.eyebrow}>Signals to watch</span>
       <h2 id="h-ind" className={styles.h2}>Seven indicators, as read on 23 Oct</h2>
       <p className={styles.lead}>Tap one to open it.</p>
       <div className={styles.indicators}>
