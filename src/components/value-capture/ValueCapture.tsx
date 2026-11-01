@@ -51,11 +51,11 @@ export default function ValueCapture() {
       <main className={styles.wrap}>
         <header className={styles.hero}>
           <span className={styles.eyebrow}>
-            <Link href="/" className={styles.back}>← Map</Link> · AI Frontier Korea, 24 Oct 2026
+            <Link href="/" className={styles.back}>← Map</Link>
           </span>
           <h1 className={styles.h1}>Think like the hosts.</h1>
           <p className={styles.lead}>
-            Pick a company. Run it through the six lenses 노정석 and 박종현 use to judge where AI value goes. You can
+            Pick a company. Run it through six lenses that judge where AI value goes. You can
             change any answer if you disagree.
           </p>
         </header>
@@ -131,10 +131,6 @@ export default function ValueCapture() {
             <li>The six lenses are the hosts&apos;. The company readings are this project&apos;s own use of them, not the hosts&apos; views.</li>
             <li>Figures come from the deck and one fast news week. Check each against its original source before it goes on the map.</li>
           </ul>
-          <span>
-            Sources: AI Frontier Korea episode (recorded 24 Oct 2026) and the deck &quot;가치는 어디로 가는가&quot; (Chester, 23
-            Oct 2026).
-          </span>
         </footer>
       </main>
     </div>

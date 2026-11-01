@@ -72,9 +72,7 @@
 .lens { display: flex; flex-direction: column; gap: 20px; scroll-margin-top: 72px; }
 .lensHead { display: flex; flex-direction: column; gap: 4px; }
 .question { font-size: 1.05rem; }
-.quote { margin: 0; padding-left: 16px; border-left: 2px solid var(--fg); display: flex; flex-direction: column; gap: 4px; }
-.quote blockquote { margin: 0; font-size: 1.05rem; }
-.quote figcaption { font-size: 0.88rem; color: var(--muted); max-width: 62ch; }
+.idea { margin: 0; padding-left: 16px; border-left: 2px solid var(--fg); font-size: 0.95rem; max-width: 62ch; }
 .diagram { background: var(--tint); border-radius: 6px; padding: 20px; min-width: 0; }
 .outcome { display: flex; gap: 10px; align-items: baseline; }
 .outcome b { font-weight: 500; }
