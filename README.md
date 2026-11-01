@@ -15,6 +15,21 @@ npm run dev
 
 Then open http://localhost:3000.
 
+## Value capture explainer
+
+`/value-capture` is an interactive reading of the AI Frontier deck "가치는 어디로 가는가" (23 Oct 2026), mapped to the six layers.
+
+- Route: `src/app/value-capture/page.tsx`
+- Content: `src/data/valueCapture.ts`
+- Components: `src/components/value-capture/`. `ValueCapture.tsx` holds the shared year state. Each section (year bar, layer stack, domain queue, startup test, margin bars, indicators, scenario map) is its own component that reads the year.
+
+## Deploy on Vercel
+
+1. Sign in at vercel.com with GitHub.
+2. Choose **Add New → Project** and import `hwnprc/ai-ecosystem`. Vercel detects Next.js. Keep the defaults.
+3. Choose **Deploy**. Every push to `main` then redeploys, and every pull request gets a preview link.
+4. To use `map.haewonpark.me`, open **Settings → Domains**, add it, and create the CNAME record Vercel shows at your domain registrar.
+
 ## How it is built
 
 - **Next.js + React + TypeScript.** Next.js handles pages and the build. React draws the map.
