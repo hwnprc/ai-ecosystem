@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Where AI Value Goes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow reading column; each section is a small instrument you click through. */
+:root{
+  --bg:#f5f7f8; --surface:#ffffff; --ink:#14212b; --muted:#5a6873; --line:#d9e0e5;
+  --phys:#a8650f; --phys-soft:#f6ead8;
+  --sig:#0e7a70; --sig-soft:#dcf0ed;
+  --leak:#b3423a; --leak-soft:#f6e1df;
+  --mid:#5866a8; --mid-soft:#e3e6f4;
+  --display:"Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f161c; --surface:#16212a; --ink:#e6edf1; --muted:#9aa8b2; --line:#2a3842;
+  --phys:#e3a04a; --phys-soft:#33281a; --sig:#4cc3b5; --sig-soft:#16312e;
+  --leak:#e7786f; --leak-soft:#3a2120; --mid:#9aa6e6; --mid-soft:#232845; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f161c; --surface:#16212a; --ink:#e6edf1; --muted:#9aa8b2; --line:#2a3842;
+  --phys:#e3a04a; --phys-soft:#33281a; --sig:#4cc3b5; --sig-soft:#16312e;
+  --leak:#e7786f; --leak-soft:#3a2120; --mid:#9aa6e6; --mid-soft:#232845; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:32px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3.1rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.55rem;font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.1rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sec{display:flex;flex-direction:column;gap:16px}
+.lead{color:var(--muted);font-size:1.02rem}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--sig);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* hero */
+.hero{display:flex;flex-direction:column;gap:20px}
+.twin{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.scar{border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.scar.p{background:var(--phys-soft);border-left:4px solid var(--phys)}
+.scar.s{background:var(--sig-soft);border-left:4px solid var(--sig)}
+.scar b{font-family:var(--display);font-size:1.05rem}
+.scar small{color:var(--muted);font-size:.85rem}
+.leakline{font-size:.95rem;color:var(--muted)}
+.leakline strong{color:var(--leak)}
+
+/* layer stack */
+.stackgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px;align-items:start}
+.stack{display:flex;flex-direction:column-reverse;gap:6px}
+.layer{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;transition:transform .15s,border-color .15s}
+.layer:hover{transform:translateX(3px)}
+.layer[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 4px 0 0 var(--ink)}
+.layer span:first-child{font-weight:600}
+.pill{font-family:var(--mono);font-size:.7rem;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.pill.win{background:var(--sig-soft);color:var(--sig)}
+.pill.phys{background:var(--phys-soft);color:var(--phys)}
+.pill.lose{background:var(--leak-soft);color:var(--leak)}
+.pill.mid{background:var(--mid-soft);color:var(--mid)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel dl{margin:0;display:grid;gap:10px}
+.panel dt{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.panel dd{margin:0}
+.toggle{display:inline-flex;border:1px solid var(--line);border-radius:99px;padding:3px;background:var(--surface);align-self:flex-start}
+.toggle button{border:0;background:transparent;padding:6px 14px;border-radius:99px;font-size:.9rem}
+.toggle button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+/* attention queue */
+.queue{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.zone{border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.zone.closed{background:var(--leak-soft)}
+.zone.closing{background:var(--mid-soft)}
+.zone.open{background:var(--sig-soft)}
+.zone header{display:flex;flex-direction:column;gap:2px}
+.zone header b{font-family:var(--display)}
+.zone header small{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:4px 11px;font-size:.88rem}
+.chip[aria-pressed="true"]{border-color:var(--ink);font-weight:600}
+.arrow{font-family:var(--mono);font-size:.78rem;color:var(--muted);display:flex;justify-content:space-between}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-height:3.5em}
+
+/* test */
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.qs{display:flex;flex-direction:column;gap:8px}
+.q{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.q p{font-size:.95rem}
+.q small{display:block;color:var(--muted);font-size:.82rem}
+.yn{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.yn button{border:0;background:transparent;padding:6px 12px;font-size:.85rem}
+.yn button+button{border-left:1px solid var(--line)}
+.yn button[aria-pressed="true"][data-v="no"]{background:var(--sig);color:var(--bg)}
+.yn button[aria-pressed="true"][data-v="yes"]{background:var(--leak);color:var(--bg)}
+.verdict{border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:4px;transition:background .2s}
+.verdict b{font-family:var(--display);font-size:1.15rem}
+.meter{display:flex;gap:4px}
+.meter i{flex:1;height:8px;border-radius:4px;background:var(--line)}
+
+/* margin bars */
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:center}
+.bar .lbl{font-weight:600;font-size:.92rem}
+.track{background:var(--line);border-radius:6px;height:26px;position:relative;overflow:hidden}
+.fill{height:100%;border-radius:6px;transition:width .5s ease;display:flex;align-items:center;padding-left:8px;font-family:var(--mono);font-size:.75rem;color:var(--bg);white-space:nowrap}
+.barnote{grid-column:2;font-size:.85rem;color:var(--muted);margin-top:-4px}
+.caption{font-size:.82rem;color:var(--muted)}
+
+/* indicators */
+.inds{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.ind{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:8px}
+.ind .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.ind b{font-size:.95rem}
+.ind .more{font-size:.88rem;color:var(--muted)}
+.ind[aria-expanded="false"] .more{display:none}
+.ind .hint{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+
+/* scenarios */
+.grid2{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;align-items:stretch}
+.axis{font-family:var(--mono);font-size:.72rem;color:var(--muted);display:flex;align-items:center;justify-content:center;text-align:center;padding:4px}
+.axis.v{writing-mode:vertical-rl;transform:rotate(180deg)}
+.scn{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:6px;min-width:0}
+.scn[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 -4px 0 var(--ink)}
+.scn .pct{font-family:var(--display);font-size:1.8rem;font-weight:800;line-height:1}
+.scn small{color:var(--muted);font-size:.85rem}
+
+.foot{font-size:.88rem;color:var(--muted);display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:20px}
+.foot ul{margin:0;padding-left:18px}
+
+@media (max-width:640px){
+  .stackgrid{grid-template-columns:1fr}
+  .queue{grid-template-columns:1fr}
+  .twin{grid-template-columns:1fr}
+  .bar{grid-template-columns:1fr}
+  .barnote{grid-column:1}
+  .grid2{grid-template-columns:auto 1fr 1fr}
+  .scn{padding:10px}
+  .scn .pct{font-size:1.4rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<main class="wrap">
+
+<header class="hero">
+  <span class="eyebrow">Notes on the AI Frontier deck · 23 Oct 2026</span>
+  <h1>Value goes to scarcity that does not leak.</h1>
+  <p class="lead">An interactive reading of "가치는 어디로 가는가" for the US AI ecosystem map. Click through each part. The deck says there are only two kinds of lasting scarcity.</p>
+  <div class="twin">
+    <div class="scar p"><b>Physical bottlenecks</b><span>Power, land, HBM, packaging, chips.</span><small>Pays during the build-out.</small></div>
+    <div class="scar s"><b>Operation signals</b><span>Outcomes that only show up in real life. Did they buy again? Did the repair hold 90 days?</span><small>Pays after the build-out.</small></div>
+  </div>
+  <p class="leakline"><strong>Everything else leaks.</strong> Recipes spread in months. Data gets resold in about a year. Open models trail the frontier by about 4 months, and by about 6 weeks in coding. The same capability gets about 10x cheaper each year.</p>
+</header>
+
+<section class="sec" aria-labelledby="h-layers">
+  <span class="eyebrow">1 · Your six map layers</span>
+  <h2 id="h-layers">Who keeps the margin on each layer?</h2>
+  <p class="lead">Pick a layer. Switch between today and 2030 to see where the deck expects value to move.</p>
+  <div class="toggle" role="group" aria-label="Time">
+    <button id="t-now" aria-pressed="true" data-time="now">Today</button>
+    <button id="t-2030" aria-pressed="false" data-time="later">By 2030</button>
+  </div>
+  <div class="stackgrid">
+    <div class="stack" id="stack"></div>
+    <div class="panel" id="layerPanel" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="sec" aria-labelledby="h-queue">
+  <span class="eyebrow">2 · The lab attention queue</span>
+  <h2 id="h-queue">Which domains will the big labs take next?</h2>
+  <p class="lead">Labs go first where work is verifiable, digital, and large. Attention is roughly market size divided by how hard the data is to buy. The further right a domain sits, the longer a startup's window.</p>
+  <div class="queue" id="queue"></div>
+  <div class="arrow"><span>Lab attention arrives first</span><span>Startup window stays open longer →</span></div>
+  <div class="note" id="queueNote" aria-live="polite"></div>
+</section>
+
+<section class="sec" aria-labelledby="h-test">
+  <span class="eyebrow">3 · The four-question test</span>
+  <h2 id="h-test">Can a lab take this startup's spot?</h2>
+  <p class="lead">The deck's rule: a safe domain answers "no" to all four questions. Load an example or answer for a company on your map.</p>
+  <div class="presets" id="presets"></div>
+  <div class="qs" id="qs"></div>
+  <div class="verdict" id="verdict" aria-live="polite"></div>
+</section>
+
+<section class="sec" aria-labelledby="h-margin">
+  <span class="eyebrow">4 · Margin migration</span>
+  <h2 id="h-margin">As tokens get cheaper, who gains?</h2>
+  <p class="lead">Token prices fall about 10x a year. Whoever prices per outcome, not per token, keeps that drop as margin. Bars show the deck's direction of change, not measured shares.</p>
+  <div class="toggle" role="group" aria-label="Time for margins">
+    <button id="m-now" aria-pressed="true" data-m="now">Today</button>
+    <button id="m-2030" aria-pressed="false" data-m="later">2030</button>
+  </div>
+  <div class="bars" id="bars"></div>
+  <p class="caption">Known figures: chip gross margin about 75% today, lab inference margin about 70% (SemiAnalysis). Bar lengths for 2030 are illustrative of the deck's claims.</p>
+</section>
+
+<section class="sec" aria-labelledby="h-ind">
+  <span class="eyebrow">5 · What to watch</span>
+  <h2 id="h-ind">Seven indicators, as read on 23 Oct</h2>
+  <p class="lead">Four tell you when the phase changes. Two tell you when the operator era starts. One tells you the thesis is wrong. Tap a card for details.</p>
+  <div class="inds" id="inds"></div>
+</section>
+
+<section class="sec" aria-labelledby="h-scn">
+  <span class="eyebrow">6 · Four scenarios</span>
+  <h2 id="h-scn">Where could the next three years go?</h2>
+  <p class="lead">Two questions decide it. Does industry revenue outgrow depreciation plus interest? Does the gap between open and frontier models close? The odds are the author's personal guess.</p>
+  <div class="grid2" id="scn"></div>
+  <div class="note" id="scnNote" aria-live="polite"></div>
+</section>
+
+<footer class="foot">
+  <b>Read with care</b>
+  <ul>
+    <li>This is one person's thesis from a Korean VC-style podcast. The author says his odds rest on thin data.</li>
+    <li>Many numbers come from one fast news week (Reuters, FT, ORTEX, UBS, SemiAnalysis). Check each against its original source before it goes on the map.</li>
+    <li>The deck is about finance and big players. It says little about early-stage startups, so the YC data still has to fill that gap.</li>
+  </ul>
+  <span>Sources: AI Frontier deck "가치는 어디로 가는가" (Chester, 23 Oct 2026, 57 slides) and the AI Frontier Korea episode transcript (recorded 24 Oct 2026).</span>
+</footer>
+</main>
+
+<script>
+const LAYERS=[
+ {id:"compute",name:"Compute and chips",now:["phys","Physical scarcity"],later:["mid","Normalizing"],
+  today:"Chip gross margin is about 75%. Power is the strongest moat. Contracts are priced in gigawatts, not GPUs, because chips get swapped every two years but power stays.",
+  future:"Margin normalizes as work spreads to ASICs and TPUs. Power still matters, but it will become regulated.",
+  ex:"Nvidia, Broadcom, TPU and Trainium programs, power and site owners",
+  map:"Tag power, land, and packaging companies as physical bottlenecks."},
+ {id:"cloud",name:"Cloud",now:["lose","Spread business"],later:["lose","Loser in every scenario"],
+  today:"Neoclouds borrow to buy GPUs and rent them out. CoreWeave has a $104B backlog but needs about $35B of new debt a year. Its 5-year CDS spread hit 1,195bp on 15 Oct. Short sellers made about $6B in October on five neoclouds.",
+  future:"Likely end is acquisition or debt restructuring around 2027 to 2028. The GPUs keep running. What disappears is the middleman's equity.",
+  ex:"CoreWeave, Lambda, Crusoe, Nebius. Hyperscalers sit safer on the left of the funding spectrum.",
+  map:"Show where each cloud company sits on the funding spectrum, from cash-rich to refinancing-dependent."},
+ {id:"models",name:"Foundation models",now:["win","Frontier premium"],later:["mid","Utility"],
+  today:"Two big labs rent their compute. Only xAI owns its own. Anthropic's S-1 shows $450B of non-cancellable compute commitments. Q3 revenue was $16.8B, but growth slowed from +147% to +45%.",
+  future:"Two or three labs become utilities. They compete on cheapest intelligence per watt and try to move into per-outcome pricing, like Claude Code priced per task or seat.",
+  ex:"Anthropic, OpenAI, Google, xAI. Near-frontier open labs win on ownership, such as sovereign AI and on-prem.",
+  map:"Lab stakes are \"insurance\" in the deck's view. Mark labs as utility-bound unless the gap stays open."},
+ {id:"tools",name:"Infrastructure and tools",now:["mid","Cost fight"],later:["lose","Squeezed"],
+  today:"Inference platforms compete with the labs on cost. API resellers have near-zero margin.",
+  future:"The deck calls moving from GPUs to inference \"not an escape, just a move.\" Labs win the cost fight.",
+  ex:"Together, Fireworks, Baseten, CoreWeave plus Weights and Biases",
+  map:"Flag tool startups whose only edge is price or routing."},
+ {id:"apps",name:"Applications",now:["mid","Not here yet"],later:["win","Winner if it owns the outcome"],
+  today:"Spending is very concentrated. The top 1% of users bring 20% of revenue and only 4.5% of users pay. No AI-native winner yet in shopping, social, or entertainment.",
+  future:"Biggest winner of price deflation, if the app defines and checks the outcome. B2B builds loops inside a customer's operations. B2C owns the checkout, not just the intent.",
+  ex:"Palantir and forward-deployed engineering in B2B. Vertical agents that close the sale in B2C. Horizontal personal agents belong to labs.",
+  map:"Your main startup layer. Tag each app with whether it owns an outcome signal."},
+ {id:"physical",name:"Physical AI",now:["phys","Physical scarcity"],later:["win","Strongest position"],
+  today:"Physical and regulated work is last in the labs' queue, because the data cannot be bought.",
+  future:"The one setup the deck fully backs: compute, model, and a physical operation inside one company. Driving and launch data do not exist outside the operation.",
+  ex:"Tesla, xAI, SpaceX. Lab-owned wet labs like Periodic Labs, Lila, Isomorphic.",
+  map:"Look for startups that run the physical operation themselves, not just sell software to it."}
+];
+const PILL={win:"win",phys:"phys",lose:"lose",mid:"mid"};
+let curLayer="apps", curTime="now";
+const stack=document.getElementById("stack"), panel=document.getElementById("layerPanel");
+function renderLayers(){
+  stack.innerHTML="";
+  LAYERS.forEach(L=>{
+    const st=curTime==="now"?L.now:L.later;
+    const b=document.createElement("button");
+    b.className="layer";b.id="layer-"+L.id;b.setAttribute("aria-pressed",L.id===curLayer);
+    b.innerHTML=`<span>${L.name}</span><span class="pill ${PILL[st[0]]}">${st[1]}</span>`;
+    b.onclick=()=>{curLayer=L.id;renderLayers()};
+    stack.appendChild(b);
+  });
+  const L=LAYERS.find(x=>x.id===curLayer), st=curTime==="now"?L.now:L.later;
+  panel.innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap"><h3>${L.name}</h3><span class="pill ${PILL[st[0]]}">${st[1]}</span></div>
+  <dl><div><dt>${curTime==="now"?"Today":"By 2030"}</dt><dd>${curTime==="now"?L.today:L.future}</dd></div>
+  <div><dt>Examples</dt><dd>${L.ex}</dd></div>
+  <div><dt>For your map</dt><dd>${L.map}</dd></div></dl>`;
+}
+document.querySelectorAll("[data-time]").forEach(b=>b.onclick=()=>{curTime=b.dataset.time;
+  document.querySelectorAll("[data-time]").forEach(x=>x.setAttribute("aria-pressed",x===b));renderLayers()});
+renderLayers();
+
+const ZONES=[
+ {k:"closed",t:"Closed",s:"gap ~6 weeks",items:{
+   "Coding":"Closed without buying data. Kimi K3.1 Pro came within about 6 weeks of Opus 5.5 on a coding-agent benchmark.",
+   "Math":"Verifiable and digital. The deck says verifiable domains are already past AGI-level.",
+   "Physics":"Verifiable and digital, so labs reached it early."}},
+ {k:"closing",t:"Closing now",s:"labs buying expert data",items:{
+   "Finance":"Labs hire experts to build RL training environments. The signal is buyable, so the gap will close.",
+   "Law":"Legal documents can be judged on screen by a third party. That makes the signal buyable.",
+   "Biology (digital)":"Being closed sector by sector with purchased data. Slower than coding."}},
+ {k:"open",t:"Still open",s:"data can't be bought",items:{
+   "Physical work":"Repairs, factories, logistics. The outcome only shows in the real world over time.",
+   "Wet-lab bio":"Labs try to become the operator here, like Periodic Labs and Lila. Defense is a fragmented operator market.",
+   "Regulated domains":"License and liability block labs from operating directly. Big, slow, messy. The mess is the moat."}}
+];
+const queue=document.getElementById("queue"), qNote=document.getElementById("queueNote");
+let curDom="Physical work";
+function renderQueue(){
+  queue.innerHTML="";
+  ZONES.forEach(z=>{
+    const d=document.createElement("div");d.className="zone "+z.k;
+    d.innerHTML=`<header><b>${z.t}</b><small>${z.s}</small></header><div class="chips"></div>`;
+    Object.keys(z.items).forEach(name=>{
+      const c=document.createElement("button");c.className="chip";c.textContent=name;
+      c.id="dom-"+name.replace(/\W+/g,"-").toLowerCase();
+      c.setAttribute("aria-pressed",name===curDom);
+      c.onclick=()=>{curDom=name;renderQueue()};
+      d.querySelector(".chips").appendChild(c);
+      if(name===curDom) qNote.innerHTML=`<b>${name}.</b> ${z.items[name]}`;
+    });
+    queue.appendChild(d);
+  });
+}
+renderQueue();
+
+const QS=[
+ ["Can the label exist outside the operation?","Could a third party judge the result on a screen?"],
+ ["Can a lab become the operator itself?","Physical work, liability, licenses, or a clash with the lab's business block this."],
+ ["Can simulation replace the real signal?","Midjourney lost ground because images can be judged and synthesized."],
+ ["Is the operator market easy to buy up?","Fragmented markets, or partners too big to swallow, are safer."]
+];
+const PRESETS=[
+ {n:"AI contract review",a:["yes","no","yes","yes"]},
+ {n:"Image generator",a:["yes","yes","yes","yes"]},
+ {n:"API reseller",a:["yes","yes","yes","yes"]},
+ {n:"Hospital outcome loop",a:["no","no","no","no"]},
+ {n:"Robot repair fleet",a:["no","no","no","yes"]}
+];
+let ans=[null,null,null,null], curPreset=null;
+const qs=document.getElementById("qs"), verdict=document.getElementById("verdict"), presets=document.getElementById("presets");
+PRESETS.forEach((p,i)=>{const b=document.createElement("button");b.className="chip";b.id="preset-"+i;b.textContent=p.n;
+  b.onclick=()=>{ans=[...p.a];curPreset=i;renderTest()};presets.appendChild(b)});
+function renderTest(){
+  presets.querySelectorAll(".chip").forEach((b,i)=>b.setAttribute("aria-pressed",i===curPreset));
+  qs.innerHTML="";
+  QS.forEach((q,i)=>{
+    const r=document.createElement("div");r.className="q";
+    r.innerHTML=`<p>${i+1}. ${q[0]}<small>${q[1]}</small></p><div class="yn" role="group" aria-label="Answer ${i+1}"><button id="q${i}-yes" data-v="yes">Yes</button><button id="q${i}-no" data-v="no">No</button></div>`;
+    r.querySelectorAll("button").forEach(b=>{b.setAttribute("aria-pressed",ans[i]===b.dataset.v);
+      b.onclick=()=>{ans[i]=b.dataset.v;curPreset=null;renderTest()}});
+    qs.appendChild(r);
+  });
+  const answered=ans.filter(Boolean).length, nos=ans.filter(a=>a==="no").length;
+  const meter=`<div class="meter">${ans.map(a=>`<i style="background:${a==="no"?"var(--sig)":a==="yes"?"var(--leak)":"var(--line)"}"></i>`).join("")}</div>`;
+  let bg,title,txt;
+  if(answered<4){bg="var(--surface)";title=`${answered} of 4 answered`;txt="Answer all four to see the verdict.";}
+  else if(nos===4){bg="var(--sig-soft)";title="Defensible";txt="The signal can't be bought, simulated, or taken over. This is where the deck expects operators to win.";}
+  else if(nos>=2){bg="var(--mid-soft)";title="Window, not a moat";txt="Some protection, but a lab can reach it. Check where it sits in the attention queue to see how long the window lasts.";}
+  else{bg="var(--leak-soft)";title="A lab can take it";txt="The signal is buyable or replaceable. Expect labs or data vendors to close this gap.";}
+  verdict.style.background=bg;verdict.innerHTML=`<b>${title}</b>${meter}<span>${txt}</span>`;
+}
+ans=[...PRESETS[3].a];curPreset=3;renderTest();
+
+const BARS=[
+ {n:"Chips",c:"var(--phys)",now:75,later:45,nl:"GM ~75%",ll:"normalizing",note:"Work spreads to ASICs and TPUs."},
+ {n:"Labs",c:"var(--mid)",now:70,later:35,nl:"inference ~70%",ll:"utility",note:"2 or 3 utilities. They try per-outcome pricing."},
+ {n:"Hyperscaler ads",c:"var(--muted)",now:55,later:30,nl:"intent margin",ll:"declining",note:"Search ads shrink. Those that guard the checkout keep their spot."},
+ {n:"Neocloud spread",c:"var(--leak)",now:20,later:5,nl:"thin, levered",ll:"near zero",note:"Spread businesses lose in every scenario."},
+ {n:"Operators with signal",c:"var(--sig)",now:12,later:80,nl:"small",ll:"biggest gain",note:"Input tokens get 10x cheaper a year. Verified outcomes keep their price."}
+];
+let mTime="now";const bars=document.getElementById("bars");
+function renderBars(){bars.innerHTML="";BARS.forEach(b=>{const v=mTime==="now"?b.now:b.later;
+  const r=document.createElement("div");r.className="bar";
+  r.innerHTML=`<span class="lbl">${b.n}</span><div class="track"><div class="fill" style="width:${v}%;background:${b.c}">${mTime==="now"?b.nl:b.ll}</div></div>${mTime==="later"?`<span class="barnote">${b.note}</span>`:""}`;
+  bars.appendChild(r)})}
+document.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{mTime=b.dataset.m;
+  document.querySelectorAll("[data-m]").forEach(x=>x.setAttribute("aria-pressed",x===b));renderBars()});
+renderBars();
+
+const INDS=[
+ ["Spot vs. contract GPU price","phase","Not yet","mid","The price war starts the day 1-year reserved prices for the newest chips begin to fall. CoreWeave raised prices 25% in July and 10% in October."],
+ ["Payback period","phase","Watch","mid","Longer payback is a correction signal. CoreWeave about 2.5 years. SpaceX about 1 year."],
+ ["Paid revenue vs. depreciation + interest","phase","Leaning worse","lose","The swing variable between a local correction and a shake-out. Meta free cash flow was -$2.1B. Hyperscaler capex is about 100% of operating cash flow (UBS)."],
+ ["Open vs. frontier gap","phase","Closing","win","Over 12 months means a few labs keep a monopoly. Now about 4 months overall and about 6 weeks in coding."],
+ ["Domains outside coding with clear success criteria","operator","No reading","mid","Shows where the operator era starts. The deck gives no number yet. A good one for your map to count."],
+ ["Per-outcome vs. per-token revenue share","operator","No reading","mid","Shows who keeps the margin. A shift to per-task or per-seat pricing means value is moving up."],
+ ["First sign of self-improving AI","thesis","Not yet","mid","A new frontier pretrain that is smaller yet better. If it lands before 2027 to 2028, labs win bigger and the thesis weakens. Proxy for now: METR task length."]
+];
+const KIND={phase:"Phase change",operator:"Operator era",thesis:"Thesis check"};
+const inds=document.getElementById("inds");
+INDS.forEach((d,i)=>{const b=document.createElement("button");b.className="ind";b.id="ind-"+i;b.setAttribute("aria-expanded","false");
+  b.innerHTML=`<div class="top"><b>${i+1}. ${d[0]}</b><span class="pill ${PILL[d[3]]}">${d[2]}</span></div><span class="hint">${KIND[d[1]]}</span><span class="more">${d[4]}</span>`;
+  b.onclick=()=>b.setAttribute("aria-expanded",b.getAttribute("aria-expanded")!=="true");inds.appendChild(b)});
+
+const SCN=[
+ {id:"S1",t:"Local correction",p:"~50%",d:"Only marginal builders get cleaned up. Infra becomes a utility. Value moves to operators."},
+ {id:"S3",t:"Intelligence oligopoly",p:"10–20%",d:"Two or three labs keep a capability premium for a long time. The correction stays small."},
+ {id:"S2",t:"Credit crunch",p:"~25%",d:"SPVs unwind and parent companies restructure. Operators then build on cheap infra, faster than in S1."},
+ {id:"S4",t:"Single winner",p:"<10%",d:"Only the lab with the cheapest capital survives. The most destructive case."}
+];
+const scn=document.getElementById("scn"), scnNote=document.getElementById("scnNote");let curS="S1";
+function renderScn(){scn.innerHTML=`<span></span><span class="axis">Gap closes · models are a utility</span><span class="axis">Gap stays · intelligence monopoly</span>`;
+  SCN.forEach((s,i)=>{if(i%2===0)scn.insertAdjacentHTML("beforeend",`<span class="axis v">${i===0?"Revenue beats costs":"Revenue trails costs"}</span>`);
+    const b=document.createElement("button");b.className="scn";b.id="scn-"+s.id;b.setAttribute("aria-pressed",s.id===curS);
+    b.innerHTML=`<span class="pct">${s.p}</span><b>${s.id} · ${s.t}</b>`;b.onclick=()=>{curS=s.id;renderScn()};scn.appendChild(b)});
+  const s=SCN.find(x=>x.id===curS);
+  scnNote.innerHTML=`<b>${s.id} · ${s.t}.</b> ${s.d} <span style="color:var(--muted)">In every scenario, spread businesses lose and operators with real-world signals survive.</span>`}
+renderScn();
+</script>
+</body>
+</html>
