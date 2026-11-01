@@ -120,19 +120,86 @@ button:focus-visible{outline:1px solid var(--fg);outline-offset:3px}
   .scn .pct{font-size:1.3rem}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* interactive additions */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top, 0px);z-index:10;background:var(--bg)}
+.timebar{position:sticky;top:env(safe-area-inset-top, 0px);z-index:9;background:var(--bg);border-bottom:1px solid var(--line);margin:-72px calc(-1 * max(16px, env(safe-area-inset-left, 0px))) 56px;padding:12px max(16px, env(safe-area-inset-left, 0px))}
+.tb-inner{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.play{width:28px;height:28px;border:1px solid var(--fg)!important;border-radius:50%;display:grid;place-items:center;font-size:.65rem;flex:none;text-align:center}
+.yr{font-size:1.1rem;font-weight:500;width:3.2ch;flex:none}
+.tb-read{font-size:.78rem;color:var(--muted);white-space:nowrap;flex:none;min-width:12ch;text-align:right}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;min-width:0;height:20px;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:1px;background:var(--fg)}
+input[type=range]::-moz-range-track{height:1px;background:var(--fg)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--fg);margin-top:-6.5px;border:0}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--fg);border:0}
+input[type=range]:focus-visible{outline:1px solid var(--fg);outline-offset:4px}
+.gauge{height:1px;background:var(--line);position:relative;margin:8px 0 2px}
+.gauge i{position:absolute;left:0;top:-1px;height:3px;background:var(--fg);transition:width .3s ease}
+.ph{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.layer[aria-selected="true"]{color:var(--fg)}
+.layer[aria-selected="true"] span:first-child::before{content:"→ "}
+.layer .pill{transition:color .3s}
+.chip.gone{text-decoration:line-through;color:var(--line)}
+.chip.gone[aria-pressed="true"]{color:var(--muted)}
+.dim{color:var(--muted)}
+.namefield{font:inherit;font-size:1.1rem;color:var(--fg);background:transparent;border:0;border-bottom:1px solid var(--line);padding:6px 0;width:100%;max-width:360px}
+.namefield:focus{outline:none;border-bottom-color:var(--fg)}
+.meter i.on{background:var(--fg)}
+.meter i.off{background:transparent}
+.meter i:not(.on):not(.off){border-color:var(--line)}
+.window{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.wtrack{height:1px;background:var(--line);position:relative}
+.wtrack i{position:absolute;left:0;top:-1px;height:3px;background:var(--fg);transition:width .3s}
+.wtrack b{position:absolute;top:-5px;width:1px;height:11px;background:var(--muted)}
+.wlab{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);gap:8px}
+.plus{display:inline-block;width:1ch;color:var(--muted);transition:transform .2s}
+.ind[aria-expanded="true"] .plus{transform:rotate(45deg)}
+.plane{position:relative;aspect-ratio:16/10;max-width:100%;border:1px solid var(--line);display:grid;grid-template-columns:var(--vx,66%) 1fr;grid-template-rows:var(--hy,50%) 1fr;touch-action:none;cursor:crosshair;user-select:none}
+.plane .q{padding:12px;display:flex;flex-direction:column;gap:2px;color:var(--line);transition:color .25s;min-width:0}
+.plane .q1{border-right:1px dashed var(--line);border-bottom:1px dashed var(--line)}
+.plane .q3{border-bottom:1px dashed var(--line);align-items:flex-end;text-align:right}
+.plane .q2{border-right:1px dashed var(--line)}
+.plane .q4{align-items:flex-end;text-align:right}
+.plane .q.on{color:var(--fg)}
+.plane .pct{font-size:1.6rem;font-weight:300;line-height:1.1}
+.plane .q b{font-weight:400;font-size:.85rem}
+.dot,.ghost{position:absolute;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
+.dot{background:var(--fg);box-shadow:0 0 0 6px color-mix(in srgb, var(--fg) 12%, transparent)}
+.ghost{border:1px dashed var(--muted)}
+.sliders{display:grid;grid-template-columns:1fr;gap:4px 0;font-size:.85rem;color:var(--muted)}
+.sliders label{display:flex;justify-content:space-between;gap:8px;margin-top:8px}
+.sliders label span{color:var(--fg)}
+.reset{font-size:.85rem;color:var(--muted);border-bottom:1px solid var(--line)!important;align-self:flex-start}
+@media (max-width:600px){
+  .timebar{margin-top:-40px;margin-bottom:40px}
+  .plane{aspect-ratio:1/1}
+  .plane .pct{font-size:1.2rem}
+  .plane .q{padding:8px}
+  .plane .q b{font-size:.75rem}
+}
 </style>
 
 </head>
 <body>
+<div class="timebar" id="timebar">
+  <div class="tb-inner">
+    <button id="play" class="play" aria-label="Play the years">▶</button>
+    <label for="year" class="yr"><span id="yearOut">2026</span></label>
+    <input type="range" id="year" min="2026" max="2030" step="0.05" value="2026" aria-label="Year">
+    <span class="tb-read" id="tokenOut">token cost 1×</span>
+  </div>
+</div>
+
 <main class="wrap">
 
 <header class="hero">
   <span class="eyebrow">23 Oct 2026</span>
   <h1>Value goes to scarcity that does not leak.</h1>
-  <p class="lead">A reading of the AI Frontier deck "가치는 어디로 가는가" for the US AI ecosystem map.</p>
+  <p class="lead">A reading of the AI Frontier deck "가치는 어디로 가는가" for the US AI ecosystem map. Drag the year at the top. The whole page moves with it.</p>
   <div class="twin">
-    <div class="scar p"><b>Physical bottlenecks</b><span>Power, land, HBM, packaging, chips.</span><small>Pays during the build-out.</small></div>
-    <div class="scar s"><b>Operation signals</b><span>Outcomes that only show up in real life. Did they buy again? Did the repair hold 90 days?</span><small>Pays after the build-out.</small></div>
+    <div class="scar"><b>Physical bottlenecks</b><span>Power, land, HBM, packaging, chips.</span><div class="gauge"><i id="gPhys"></i></div><small id="gPhysT">Pays now, during the build-out.</small></div>
+    <div class="scar"><b>Operation signals</b><span>Outcomes that only show up in real life. Did they buy again?</span><div class="gauge"><i id="gSig"></i></div><small id="gSigT">Small today. Pays after the build-out.</small></div>
   </div>
   <p class="leakline"><strong>Everything else leaks.</strong> Open models trail the frontier by about 4 months. The same capability gets about 10x cheaper each year.</p>
 </header>
@@ -140,13 +207,9 @@ button:focus-visible{outline:1px solid var(--fg);outline-offset:3px}
 <section class="sec" aria-labelledby="h-layers">
   <span class="eyebrow">01</span>
   <h2 id="h-layers">Who keeps the margin on each layer?</h2>
-  
-  <div class="toggle" role="group" aria-label="Time">
-    <button id="t-now" aria-pressed="true" data-time="now">Today</button>
-    <button id="t-2030" aria-pressed="false" data-time="later">By 2030</button>
-  </div>
+  <p class="lead">Hover or use the arrow keys. Watch the labels change as the year moves.</p>
   <div class="stackgrid">
-    <div class="stack" id="stack"></div>
+    <div class="stack" id="stack" role="listbox" aria-label="Layers"></div>
     <div class="panel" id="layerPanel" aria-live="polite"></div>
   </div>
 </section>
@@ -154,16 +217,18 @@ button:focus-visible{outline:1px solid var(--fg);outline-offset:3px}
 <section class="sec" aria-labelledby="h-queue">
   <span class="eyebrow">02</span>
   <h2 id="h-queue">Which domains will the big labs take next?</h2>
-  <p class="lead">Labs go first where work is verifiable, digital, and large.</p>
+  <p class="lead"><span id="queueCount">Labs have reached 3 of 9 domains.</span> Crossed-out means a lab can now do it.</p>
   <div class="queue" id="queue"></div>
   <div class="arrow"><span>Labs arrive first</span><span>Startup window lasts longer →</span></div>
   <div class="note" id="queueNote" aria-live="polite"></div>
+  <p class="caption">The deck gives the order, not dates. Years here are illustrative.</p>
 </section>
 
 <section class="sec" aria-labelledby="h-test">
   <span class="eyebrow">03</span>
-  <h2 id="h-test">Can a lab take this startup's spot?</h2>
-  <p class="lead">A safe domain answers no to all four.</p>
+  <h2 id="h-test">Can a lab take your startup's spot?</h2>
+  <p class="lead">Name a startup, or load one. A safe one answers no to all four.</p>
+  <input id="startup" class="namefield" type="text" placeholder="Startup name" autocomplete="off">
   <div class="presets" id="presets"></div>
   <div class="qs" id="qs"></div>
   <div class="verdict" id="verdict" aria-live="polite"></div>
@@ -173,27 +238,37 @@ button:focus-visible{outline:1px solid var(--fg);outline-offset:3px}
   <span class="eyebrow">04</span>
   <h2 id="h-margin">As tokens get cheaper, who gains?</h2>
   <p class="lead">Whoever prices per outcome keeps the falling token cost as margin.</p>
-  <div class="toggle" role="group" aria-label="Time for margins">
-    <button id="m-now" aria-pressed="true" data-m="now">Today</button>
-    <button id="m-2030" aria-pressed="false" data-m="later">2030</button>
-  </div>
   <div class="bars" id="bars"></div>
-  <p class="caption">Today: chip gross margin about 75%, lab inference margin about 70%. Other bar lengths show direction only.</p>
+  <p class="caption">Today: chip gross margin about 75%, lab inference margin about 70%. Everything else shows direction only.</p>
 </section>
 
 <section class="sec" aria-labelledby="h-ind">
   <span class="eyebrow">05</span>
   <h2 id="h-ind">Seven indicators, as read on 23 Oct</h2>
-  
+  <p class="lead">Tap one to open it.</p>
   <div class="inds" id="inds"></div>
 </section>
 
 <section class="sec" aria-labelledby="h-scn">
   <span class="eyebrow">06</span>
   <h2 id="h-scn">Where could the next three years go?</h2>
-  <p class="lead">Odds are the author's personal guess.</p>
-  <div class="grid2" id="scn"></div>
+  <p class="lead">Drag the dot. Two numbers decide the scenario. The odds are the author's personal guess.</p>
+  <div class="plane" id="plane" aria-hidden="true">
+    <div class="q q1"><span class="pct" data-s="S1">~50%</span><b>S1 · Local correction</b></div>
+    <div class="q q3"><span class="pct" data-s="S3">10–20%</span><b>S3 · Intelligence oligopoly</b></div>
+    <div class="q q2"><span class="pct" data-s="S2">~25%</span><b>S2 · Credit crunch</b></div>
+    <div class="q q4"><span class="pct" data-s="S4">&lt;10%</span><b>S4 · Single winner</b></div>
+    <span class="ghost" id="ghost" title="23 Oct reading"></span>
+    <span class="dot" id="dot"></span>
+  </div>
+  <div class="sliders">
+    <label for="gap">Open vs. frontier gap <span id="gapOut">4 months</span></label>
+    <input type="range" id="gap" min="0" max="18" step="0.5" value="4">
+    <label for="ratio">Paid revenue ÷ depreciation and interest <span id="ratioOut">1.05×</span></label>
+    <input type="range" id="ratio" min="0.5" max="1.5" step="0.01" value="1.05">
+  </div>
   <div class="note" id="scnNote" aria-live="polite"></div>
+  <button class="reset" id="reset">Back to the 23 Oct reading</button>
 </section>
 
 <footer class="foot">
@@ -208,99 +283,99 @@ button:focus-visible{outline:1px solid var(--fg);outline-offset:3px}
 </main>
 
 <script>
+const $=id=>document.getElementById(id);
+let YEAR=2026;
+const T=()=>(YEAR-2026)/4;
+const lerp=(a,b,t)=>a+(b-a)*t;
+
+/* ---------- layers ---------- */
 const LAYERS=[
- {id:"compute",name:"Compute and chips",now:["phys","Physical scarcity"],later:["mid","Normalizing"],
-  today:"Chip gross margin is about 75%. Power is the strongest moat. Contracts are priced in gigawatts, not GPUs, because chips get swapped every two years but power stays.",
+ {id:"compute",name:"Compute and chips",now:["Physical scarcity",1],later:["Normalizing",0],
+  today:"Chip gross margin is about 75%. Power is the strongest moat. Contracts are priced in gigawatts, because chips get swapped every two years but power stays.",
   future:"Margin normalizes as work spreads to ASICs and TPUs. Power still matters, but it will become regulated.",
-  ex:"Nvidia, Broadcom, TPU and Trainium programs, power and site owners",
-  map:"Tag power, land, and packaging companies as physical bottlenecks."},
- {id:"cloud",name:"Cloud",now:["lose","Spread business"],later:["lose","Loser in every scenario"],
-  today:"Neoclouds borrow to buy GPUs and rent them out. CoreWeave has a $104B backlog but needs about $35B of new debt a year. Its 5-year CDS spread hit 1,195bp on 15 Oct. Short sellers made about $6B in October on five neoclouds.",
-  future:"Likely end is acquisition or debt restructuring around 2027 to 2028. The GPUs keep running. What disappears is the middleman's equity.",
-  ex:"CoreWeave, Lambda, Crusoe, Nebius. Hyperscalers sit safer on the left of the funding spectrum.",
-  map:"Show where each cloud company sits on the funding spectrum, from cash-rich to refinancing-dependent."},
- {id:"models",name:"Foundation models",now:["win","Frontier premium"],later:["mid","Utility"],
-  today:"Two big labs rent their compute. Only xAI owns its own. Anthropic's S-1 shows $450B of non-cancellable compute commitments. Q3 revenue was $16.8B, but growth slowed from +147% to +45%.",
-  future:"Two or three labs become utilities. They compete on cheapest intelligence per watt and try to move into per-outcome pricing, like Claude Code priced per task or seat.",
-  ex:"Anthropic, OpenAI, Google, xAI. Near-frontier open labs win on ownership, such as sovereign AI and on-prem.",
-  map:"Lab stakes are \"insurance\" in the deck's view. Mark labs as utility-bound unless the gap stays open."},
- {id:"tools",name:"Infrastructure and tools",now:["mid","Cost fight"],later:["lose","Squeezed"],
+  ex:"Nvidia, Broadcom, TPU and Trainium programs, power and site owners.",map:"Tag power, land, and packaging companies as physical bottlenecks."},
+ {id:"cloud",name:"Cloud",now:["Spread business",0],later:["Loses in every scenario",0],
+  today:"Neoclouds borrow to buy GPUs and rent them out. CoreWeave has a $104B backlog but needs about $35B of new debt a year. Its 5-year CDS spread hit 1,195bp on 15 Oct.",
+  future:"Likely end is acquisition or debt restructuring around 2027 to 2028. The GPUs keep running. The middleman's equity disappears.",
+  ex:"CoreWeave, Lambda, Crusoe, Nebius. Hyperscalers sit safer, with more cash.",map:"Show where each cloud company sits, from cash-rich to refinancing-dependent."},
+ {id:"models",name:"Foundation models",now:["Frontier premium",1],later:["Utility",0],
+  today:"The two big labs rent their compute. Only xAI owns its own. Anthropic's S-1 shows $450B of non-cancellable compute commitments. Growth slowed from +147% to +45%.",
+  future:"Two or three labs become utilities. They compete on cheapest intelligence per watt and try per-outcome pricing, like Claude Code per task or seat.",
+  ex:"Anthropic, OpenAI, Google, xAI. Open near-frontier labs win on ownership, such as sovereign AI.",map:"Mark labs as utility-bound unless the gap stays open."},
+ {id:"tools",name:"Infrastructure and tools",now:["Cost fight",0],later:["Squeezed",0],
   today:"Inference platforms compete with the labs on cost. API resellers have near-zero margin.",
   future:"The deck calls moving from GPUs to inference \"not an escape, just a move.\" Labs win the cost fight.",
-  ex:"Together, Fireworks, Baseten, CoreWeave plus Weights and Biases",
-  map:"Flag tool startups whose only edge is price or routing."},
- {id:"apps",name:"Applications",now:["mid","Not here yet"],later:["win","Winner if it owns the outcome"],
-  today:"Spending is very concentrated. The top 1% of users bring 20% of revenue and only 4.5% of users pay. No AI-native winner yet in shopping, social, or entertainment.",
-  future:"Biggest winner of price deflation, if the app defines and checks the outcome. B2B builds loops inside a customer's operations. B2C owns the checkout, not just the intent.",
-  ex:"Palantir and forward-deployed engineering in B2B. Vertical agents that close the sale in B2C. Horizontal personal agents belong to labs.",
-  map:"Your main startup layer. Tag each app with whether it owns an outcome signal."},
- {id:"physical",name:"Physical AI",now:["phys","Physical scarcity"],later:["win","Strongest position"],
+  ex:"Together, Fireworks, Baseten.",map:"Flag tool startups whose only edge is price or routing."},
+ {id:"apps",name:"Applications",now:["Not here yet",0],later:["Wins if it owns the outcome",1],
+  today:"Spending is very concentrated. The top 1% of users bring 20% of revenue and only 4.5% pay. No AI-native winner yet in shopping, social, or entertainment.",
+  future:"Biggest winner of price deflation, if the app defines and checks the outcome. B2B builds loops inside a customer's operations. B2C owns the checkout.",
+  ex:"Palantir-style forward-deployed engineering in B2B. Vertical agents that close the sale in B2C.",map:"Your main startup layer. Tag each app by whether it owns an outcome signal."},
+ {id:"physical",name:"Physical AI",now:["Physical scarcity",1],later:["Strongest position",1],
   today:"Physical and regulated work is last in the labs' queue, because the data cannot be bought.",
-  future:"The one setup the deck fully backs: compute, model, and a physical operation inside one company. Driving and launch data do not exist outside the operation.",
-  ex:"Tesla, xAI, SpaceX. Lab-owned wet labs like Periodic Labs, Lila, Isomorphic.",
-  map:"Look for startups that run the physical operation themselves, not just sell software to it."}
+  future:"The setup the deck fully backs: compute, model, and a physical operation in one company. Driving and launch data do not exist outside the operation.",
+  ex:"Tesla, xAI, SpaceX. Lab-owned wet labs like Periodic Labs and Lila.",map:"Look for startups that run the physical operation themselves."}
 ];
-const PILL={win:"win",phys:"phys",lose:"lose",mid:"mid"};
-let curLayer="apps", curTime="now";
-const stack=document.getElementById("stack"), panel=document.getElementById("layerPanel");
+let curLayer=4;
+const stack=$("stack"), panel=$("layerPanel");
 function renderLayers(){
+  const late=YEAR>=2028;
   stack.innerHTML="";
-  LAYERS.forEach(L=>{
-    const st=curTime==="now"?L.now:L.later;
+  LAYERS.forEach((L,i)=>{
+    const st=late?L.later:L.now;
     const b=document.createElement("button");
-    b.className="layer";b.id="layer-"+L.id;b.setAttribute("aria-pressed",L.id===curLayer);
-    b.innerHTML=`<span>${L.name}</span><span class="pill ${PILL[st[0]]}">${st[1]}</span>`;
-    b.onclick=()=>{curLayer=L.id;renderLayers()};
+    b.className="layer";b.id="layer-"+L.id;b.setAttribute("role","option");b.setAttribute("aria-selected",i===curLayer);
+    b.innerHTML=`<span>${L.name}</span><span class="pill ${st[1]?"win":""}">${st[0]}</span>`;
+    b.onmouseenter=b.onfocus=()=>{if(curLayer!==i){curLayer=i;renderLayers();$("layer-"+L.id).focus({preventScroll:true})}};
+    b.onclick=()=>{curLayer=i;renderLayers()};
+    b.onkeydown=e=>{if(e.key==="ArrowUp"){e.preventDefault();curLayer=Math.min(5,curLayer+1);renderLayers();stack.querySelector('[aria-selected="true"]').focus()}
+      if(e.key==="ArrowDown"){e.preventDefault();curLayer=Math.max(0,curLayer-1);renderLayers();stack.querySelector('[aria-selected="true"]').focus()}};
     stack.appendChild(b);
   });
-  const L=LAYERS.find(x=>x.id===curLayer), st=curTime==="now"?L.now:L.later;
-  panel.innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap"><h3>${L.name}</h3><span class="pill ${PILL[st[0]]}">${st[1]}</span></div>
-  <dl><div><dt>${curTime==="now"?"Today":"By 2030"}</dt><dd>${curTime==="now"?L.today:L.future}</dd></div>
-  <div><dt>Examples</dt><dd>${L.ex}</dd></div>
-  <div><dt>For your map</dt><dd>${L.map}</dd></div></dl>`;
+  const L=LAYERS[curLayer], st=late?L.later:L.now;
+  panel.innerHTML=`<div class="ph"><h3>${L.name}</h3><span class="pill ${st[1]?"win":""}">${st[0]}</span></div>
+  <dl><div><dt>${late?"By 2030":"Today"}</dt><dd>${late?L.future:L.today}</dd></div>
+  <div><dt>Examples</dt><dd>${L.ex}</dd></div><div><dt>For your map</dt><dd>${L.map}</dd></div></dl>`;
 }
-document.querySelectorAll("[data-time]").forEach(b=>b.onclick=()=>{curTime=b.dataset.time;
-  document.querySelectorAll("[data-time]").forEach(x=>x.setAttribute("aria-pressed",x===b));renderLayers()});
-renderLayers();
 
+/* ---------- queue ---------- */
 const ZONES=[
- {k:"closed",t:"Closed",s:"gap ~6 weeks",items:{
-   "Coding":"Closed without buying data. Kimi K3.1 Pro came within about 6 weeks of Opus 5.5 on a coding-agent benchmark.",
-   "Math":"Verifiable and digital. The deck says verifiable domains are already past AGI-level.",
-   "Physics":"Verifiable and digital, so labs reached it early."}},
- {k:"closing",t:"Closing now",s:"labs buying expert data",items:{
-   "Finance":"Labs hire experts to build RL training environments. The signal is buyable, so the gap will close.",
-   "Law":"Legal documents can be judged on screen by a third party. That makes the signal buyable.",
-   "Biology (digital)":"Being closed sector by sector with purchased data. Slower than coding."}},
- {k:"open",t:"Still open",s:"data can't be bought",items:{
-   "Physical work":"Repairs, factories, logistics. The outcome only shows in the real world over time.",
-   "Wet-lab bio":"Labs try to become the operator here, like Periodic Labs and Lila. Defense is a fragmented operator market.",
-   "Regulated domains":"License and liability block labs from operating directly. Big, slow, messy. The mess is the moat."}}
+ {t:"Closed",s:"verifiable, digital",items:[
+  ["Coding",2026,"Closed without buying data. An open model came within about 6 weeks of Opus 5.5 on a coding-agent benchmark."],
+  ["Math",2026,"Verifiable and digital. The deck says these domains are already past AGI level."],
+  ["Physics",2026,"Verifiable and digital, so labs reached it early."]]},
+ {t:"Closing",s:"labs buy expert data",items:[
+  ["Finance",2027.3,"Labs hire experts to build training environments. The signal is buyable, so the gap closes."],
+  ["Law",2027.6,"Legal documents can be judged on screen by a third party. That makes the signal buyable."],
+  ["Biology (digital)",2028.5,"Closed sector by sector with purchased data. Slower than coding."]]},
+ {t:"Open",s:"data can't be bought",items:[
+  ["Physical work",null,"Repairs, factories, logistics. The outcome only shows in the real world over time."],
+  ["Wet-lab bio",2029.6,"Labs try to become the operator here, like Periodic Labs and Lila. A fragmented operator market is the defense."],
+  ["Regulated domains",null,"License and liability block labs from operating. Big, slow, messy. The mess is the moat."]]}
 ];
-const queue=document.getElementById("queue"), qNote=document.getElementById("queueNote");
 let curDom="Physical work";
 function renderQueue(){
-  queue.innerHTML="";
+  const q=$("queue");q.innerHTML="";let taken=0,total=0;
   ZONES.forEach(z=>{
-    const d=document.createElement("div");d.className="zone "+z.k;
+    const d=document.createElement("div");d.className="zone";
     d.innerHTML=`<header><b>${z.t}</b><small>${z.s}</small></header><div class="chips"></div>`;
-    Object.keys(z.items).forEach(name=>{
-      const c=document.createElement("button");c.className="chip";c.textContent=name;
-      c.id="dom-"+name.replace(/\W+/g,"-").toLowerCase();
-      c.setAttribute("aria-pressed",name===curDom);
+    z.items.forEach(([name,yr,txt])=>{
+      total++;const gone=yr!==null&&YEAR>=yr;if(gone)taken++;
+      const c=document.createElement("button");c.className="chip"+(gone?" gone":"");c.textContent=name;
+      c.id="dom-"+name.replace(/\W+/g,"-").toLowerCase();c.setAttribute("aria-pressed",name===curDom);
       c.onclick=()=>{curDom=name;renderQueue()};
       d.querySelector(".chips").appendChild(c);
-      if(name===curDom) qNote.innerHTML=`<b>${name}.</b> ${z.items[name]}`;
+      if(name===curDom)$("queueNote").innerHTML=`<b>${name}.</b> ${txt} <span class="dim">${yr===null?"Still open in 2030.":gone?"Labs reach it around "+Math.floor(yr)+".":"Window open until about "+Math.floor(yr)+"."}</span>`;
     });
-    queue.appendChild(d);
+    q.appendChild(d);
   });
+  $("queueCount").textContent=`In ${Math.floor(YEAR)}, labs have reached ${taken} of ${total} domains.`;
 }
-renderQueue();
 
+/* ---------- test ---------- */
 const QS=[
  ["Can the label exist outside the operation?","Could a third party judge the result on a screen?"],
- ["Can a lab become the operator itself?","Physical work, liability, licenses, or a clash with the lab's business block this."],
- ["Can simulation replace the real signal?","Midjourney lost ground because images can be judged and synthesized."],
+ ["Can a lab become the operator itself?","Physical work, liability, or licenses block this."],
+ ["Can simulation replace the real signal?","Images could be judged and synthesized, so Midjourney lost ground."],
  ["Is the operator market easy to buy up?","Fragmented markets, or partners too big to swallow, are safer."]
 ];
 const PRESETS=[
@@ -310,13 +385,14 @@ const PRESETS=[
  {n:"Hospital outcome loop",a:["no","no","no","no"]},
  {n:"Robot repair fleet",a:["no","no","no","yes"]}
 ];
-let ans=[null,null,null,null], curPreset=null;
-const qs=document.getElementById("qs"), verdict=document.getElementById("verdict"), presets=document.getElementById("presets");
+let ans=[...PRESETS[3].a], curPreset=3;
 PRESETS.forEach((p,i)=>{const b=document.createElement("button");b.className="chip";b.id="preset-"+i;b.textContent=p.n;
-  b.onclick=()=>{ans=[...p.a];curPreset=i;renderTest()};presets.appendChild(b)});
+  b.onclick=()=>{ans=[...p.a];curPreset=i;$("startup").value=p.n;renderTest()};$("presets").appendChild(b)});
+$("startup").value=PRESETS[3].n;
+$("startup").oninput=()=>{curPreset=null;renderTest()};
 function renderTest(){
-  presets.querySelectorAll(".chip").forEach((b,i)=>b.setAttribute("aria-pressed",i===curPreset));
-  qs.innerHTML="";
+  $("presets").querySelectorAll(".chip").forEach((b,i)=>b.setAttribute("aria-pressed",i===curPreset));
+  const qs=$("qs");qs.innerHTML="";
   QS.forEach((q,i)=>{
     const r=document.createElement("div");r.className="q";
     r.innerHTML=`<p>${i+1}. ${q[0]}<small>${q[1]}</small></p><div class="yn" role="group" aria-label="Answer ${i+1}"><button id="q${i}-yes" data-v="yes">Yes</button><button id="q${i}-no" data-v="no">No</button></div>`;
@@ -324,62 +400,103 @@ function renderTest(){
       b.onclick=()=>{ans[i]=b.dataset.v;curPreset=null;renderTest()}});
     qs.appendChild(r);
   });
-  const answered=ans.filter(Boolean).length, nos=ans.filter(a=>a==="no").length;
-  const meter=`<div class="meter">${ans.map(a=>`<i style="background:${a==="no"?"var(--fg)":"transparent"};border-color:${a?"var(--fg)":"var(--line)"}"></i>`).join("")}</div>`;
-  let bg,title,txt;
-  if(answered<4){bg="var(--surface)";title=`${answered} of 4 answered`;txt="Answer all four to see the verdict.";}
-  else if(nos===4){bg="var(--sig-soft)";title="Defensible";txt="The signal can't be bought, simulated, or taken over. This is where the deck expects operators to win.";}
-  else if(nos>=2){bg="var(--mid-soft)";title="Window, not a moat";txt="Some protection, but a lab can reach it. Check where it sits in the attention queue to see how long the window lasts.";}
-  else{bg="var(--leak-soft)";title="A lab can take it";txt="The signal is buyable or replaceable. Expect labs or data vendors to close this gap.";}
-  verdict.innerHTML=`<b>${title}</b>${meter}<span>${txt}</span>`;
+  const name=($("startup").value.trim()||"This startup").replace(/[<>&]/g,"");
+  const n=ans.filter(Boolean).length, nos=ans.filter(a=>a==="no").length;
+  const meter=`<div class="meter">${ans.map(a=>`<i class="${a==="no"?"on":a?"off":""}"></i>`).join("")}</div>`;
+  let title,txt,until=null;
+  if(n<4){title=`${n} of 4 answered`;txt="Answer all four to see the verdict.";}
+  else if(nos===4){title=`${name} is defensible.`;txt="The signal can't be bought, simulated, or taken over. This is where operators win.";}
+  else if(nos>=2){title=`${name} has a window, not a moat.`;until=2028;txt="Some protection, but a lab can reach it in time.";}
+  else{title=`A lab can take ${name}'s spot.`;until=2027;txt="The signal is buyable or replaceable.";}
+  let timeline="";
+  if(n===4){const end=until??2031, pct=Math.min(100,((end-2026)/4)*100), now=T()*100, closed=until!==null&&YEAR>=until;
+    timeline=`<div class="window"><div class="wtrack"><i style="width:${pct}%"></i><b style="left:${now}%"></b></div><div class="wlab"><span>2026</span><span>${until?(closed?"Window closed in "+YEAR.toFixed(0):"Window open until about "+until):"Open past 2030"}</span><span>2030</span></div></div>`;}
+  $("verdict").innerHTML=`<b>${title}</b>${meter}<span>${txt}</span>${timeline}`;
 }
-ans=[...PRESETS[3].a];curPreset=3;renderTest();
 
+/* ---------- bars ---------- */
 const BARS=[
- {n:"Chips",c:"var(--phys)",now:75,later:45,nl:"GM ~75%",ll:"normalizing",note:"Work spreads to ASICs and TPUs."},
- {n:"Labs",c:"var(--mid)",now:70,later:35,nl:"inference ~70%",ll:"utility",note:"2 or 3 utilities. They try per-outcome pricing."},
- {n:"Hyperscaler ads",c:"var(--muted)",now:55,later:30,nl:"intent margin",ll:"declining",note:"Search ads shrink. Those that guard the checkout keep their spot."},
- {n:"Neocloud spread",c:"var(--leak)",now:20,later:5,nl:"thin, levered",ll:"near zero",note:"Spread businesses lose in every scenario."},
- {n:"Operators with signal",c:"var(--sig)",now:12,later:80,nl:"small",ll:"biggest gain",note:"Input tokens get 10x cheaper a year. Verified outcomes keep their price."}
+ {n:"Chips",now:75,later:45,nl:"gross margin ~75%",ll:"normalizing"},
+ {n:"Labs",now:70,later:35,nl:"inference margin ~70%",ll:"utility pricing"},
+ {n:"Search ads",now:55,later:30,nl:"intent margin",ll:"shrinking"},
+ {n:"Neoclouds",now:20,later:5,nl:"thin and levered",ll:"near zero"},
+ {n:"Operators with signal",now:12,later:80,nl:"small",ll:"biggest gain"}
 ];
-let mTime="now";const bars=document.getElementById("bars");
-function renderBars(){bars.innerHTML="";BARS.forEach(b=>{const v=mTime==="now"?b.now:b.later;
-  const r=document.createElement("div");r.className="bar";
-  r.innerHTML=`<span class="lbl">${b.n}</span><div class="track"><div class="fill" style="width:${v}%"></div></div><span class="barval">${mTime==="now"?b.nl:b.ll}</span>`;
-  bars.appendChild(r)})}
-document.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{mTime=b.dataset.m;
-  document.querySelectorAll("[data-m]").forEach(x=>x.setAttribute("aria-pressed",x===b));renderBars()});
-renderBars();
+function renderBars(){const t=T(), b=$("bars");
+  if(!b.children.length)BARS.forEach((x,i)=>b.insertAdjacentHTML("beforeend",`<div class="bar"><span class="lbl">${x.n}</span><div class="track"><div class="fill" id="bf${i}"></div></div><span class="barval" id="bv${i}"></span></div>`));
+  BARS.forEach((x,i)=>{$("bf"+i).style.width=lerp(x.now,x.later,t)+"%";$("bv"+i).textContent=t<.5?x.nl:x.ll});
+}
 
+/* ---------- indicators ---------- */
 const INDS=[
- ["Spot vs. contract GPU price","phase","Not yet","mid","The price war starts the day 1-year reserved prices for the newest chips begin to fall. CoreWeave raised prices 25% in July and 10% in October."],
- ["Payback period","phase","Watch","mid","Longer payback is a correction signal. CoreWeave about 2.5 years. SpaceX about 1 year."],
- ["Paid revenue vs. depreciation + interest","phase","Leaning worse","lose","The swing variable between a local correction and a shake-out. Meta free cash flow was -$2.1B. Hyperscaler capex is about 100% of operating cash flow (UBS)."],
- ["Open vs. frontier gap","phase","Closing","win","Over 12 months means a few labs keep a monopoly. Now about 4 months overall and about 6 weeks in coding."],
- ["Domains outside coding with clear success criteria","operator","No reading","mid","Shows where the operator era starts. The deck gives no number yet. A good one for your map to count."],
- ["Per-outcome vs. per-token revenue share","operator","No reading","mid","Shows who keeps the margin. A shift to per-task or per-seat pricing means value is moving up."],
- ["First sign of self-improving AI","thesis","Not yet","mid","A new frontier pretrain that is smaller yet better. If it lands before 2027 to 2028, labs win bigger and the thesis weakens. Proxy for now: METR task length."]
+ ["Spot vs. contract GPU price","Not yet","The price war starts the day 1-year reserved prices for the newest chips begin to fall. CoreWeave raised prices 25% in July and 10% in October."],
+ ["Payback period","Watch","Longer payback is a correction signal. CoreWeave about 2.5 years. SpaceX about 1 year."],
+ ["Paid revenue vs. depreciation + interest","Leaning worse","Separates a local correction from a shake-out. Meta free cash flow was -$2.1B. Hyperscaler capex is about 100% of operating cash flow (UBS)."],
+ ["Open vs. frontier gap","Closing","Over 12 months means a few labs keep a monopoly. Now about 4 months overall and about 6 weeks in coding."],
+ ["Domains outside coding with clear success criteria","No reading","Shows where the operator era starts. A good number for your map to count."],
+ ["Per-outcome vs. per-token revenue share","No reading","Shows who keeps the margin. More per-task or per-seat pricing means value is moving up."],
+ ["First sign of self-improving AI","Not yet","A new frontier model that is smaller yet better. If it comes before 2027 to 2028, labs win bigger. Proxy for now: METR task length."]
 ];
-const KIND={phase:"Phase change",operator:"Operator era",thesis:"Thesis check"};
-const inds=document.getElementById("inds");
 INDS.forEach((d,i)=>{const b=document.createElement("button");b.className="ind";b.id="ind-"+i;b.setAttribute("aria-expanded","false");
-  b.innerHTML=`<div class="top"><b>${i+1}. ${d[0]}</b><span class="pill">${d[2]}</span></div><span class="hint">${KIND[d[1]]}</span><span class="more">${d[4]}</span>`;
-  b.onclick=()=>b.setAttribute("aria-expanded",b.getAttribute("aria-expanded")!=="true");inds.appendChild(b)});
+  b.innerHTML=`<div class="top"><span><span class="plus">+</span> ${d[0]}</span><span class="pill">${d[1]}</span></div><span class="more">${d[2]}</span>`;
+  b.onclick=()=>b.setAttribute("aria-expanded",b.getAttribute("aria-expanded")!=="true");$("inds").appendChild(b)});
 
-const SCN=[
- {id:"S1",t:"Local correction",p:"~50%",d:"Only marginal builders get cleaned up. Infra becomes a utility. Value moves to operators."},
- {id:"S3",t:"Intelligence oligopoly",p:"10–20%",d:"Two or three labs keep a capability premium for a long time. The correction stays small."},
- {id:"S2",t:"Credit crunch",p:"~25%",d:"SPVs unwind and parent companies restructure. Operators then build on cheap infra, faster than in S1."},
- {id:"S4",t:"Single winner",p:"<10%",d:"Only the lab with the cheapest capital survives. The most destructive case."}
-];
-const scn=document.getElementById("scn"), scnNote=document.getElementById("scnNote");let curS="S1";
-function renderScn(){scn.innerHTML=`<span></span><span class="axis">Gap closes · models are a utility</span><span class="axis">Gap stays · intelligence monopoly</span>`;
-  SCN.forEach((s,i)=>{if(i%2===0)scn.insertAdjacentHTML("beforeend",`<span class="axis v">${i===0?"Revenue beats costs":"Revenue trails costs"}</span>`);
-    const b=document.createElement("button");b.className="scn";b.id="scn-"+s.id;b.setAttribute("aria-pressed",s.id===curS);
-    b.innerHTML=`<span class="pct">${s.p}</span><b>${s.id} · ${s.t}</b>`;b.onclick=()=>{curS=s.id;renderScn()};scn.appendChild(b)});
-  const s=SCN.find(x=>x.id===curS);
-  scnNote.innerHTML=`<b>${s.id} · ${s.t}.</b> ${s.d} <span style="color:var(--muted)">In every scenario, spread businesses lose and operators with real-world signals survive.</span>`}
-renderScn();
+/* ---------- scenarios ---------- */
+const SCN={S1:"Only marginal builders get cleaned up. Infra becomes a utility. Value moves to operators.",
+ S3:"Two or three labs keep a capability premium for a long time. The correction stays small.",
+ S2:"Debt vehicles unwind and parent companies restructure. Operators then build on cheap infra, sooner than in S1.",
+ S4:"Only the lab with the cheapest capital survives. The most destructive case."};
+const NAMES={S1:"Local correction",S2:"Credit crunch",S3:"Intelligence oligopoly",S4:"Single winner"};
+const GMAX=18, RMIN=.5, RMAX=1.5, HOME={gap:4,ratio:1.05};
+function setScn(gap,ratio){
+  $("gap").value=gap;$("ratio").value=ratio;
+  $("gapOut").textContent=(+gap).toFixed(1).replace(".0","")+" months";
+  $("ratioOut").textContent=(+ratio).toFixed(2)+"×";
+  const x=gap/GMAX*100, y=(1-(ratio-RMIN)/(RMAX-RMIN))*100;
+  const d=$("dot");d.style.left=x+"%";d.style.top=y+"%";
+  const s=ratio>=1?(gap<12?"S1":"S3"):(gap<12?"S2":"S4");
+  document.querySelectorAll(".plane .q").forEach(q=>q.classList.toggle("on",q.querySelector(".pct").dataset.s===s));
+  $("scnNote").innerHTML=`<b>${s} · ${NAMES[s]}.</b> ${SCN[s]} <span class="dim">In every scenario, spread businesses lose and operators with real-world signals survive.</span>`;
+}
+(function(){const g=$("ghost");g.style.left=HOME.gap/GMAX*100+"%";g.style.top=(1-(HOME.ratio-RMIN)/(RMAX-RMIN))*100+"%";
+  /* thresholds */
+  const p=$("plane");p.style.setProperty("--vx",12/GMAX*100+"%");p.style.setProperty("--hy",(1-(1-RMIN)/(RMAX-RMIN))*100+"%");})();
+$("gap").oninput=$("ratio").oninput=()=>setScn(+$("gap").value,+$("ratio").value);
+$("reset").onclick=()=>setScn(HOME.gap,HOME.ratio);
+(function(){const p=$("plane");let drag=false;
+  const mv=e=>{const r=p.getBoundingClientRect();const fx=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)),fy=Math.min(1,Math.max(0,(e.clientY-r.top)/r.height));
+    setScn(Math.round(fx*GMAX*2)/2,+(RMAX-fy*(RMAX-RMIN)).toFixed(2))};
+  p.addEventListener("pointerdown",e=>{drag=true;p.setPointerCapture(e.pointerId);mv(e)});
+  p.addEventListener("pointermove",e=>{if(drag)mv(e)});
+  p.addEventListener("pointerup",()=>drag=false);p.addEventListener("pointercancel",()=>drag=false);})();
+
+/* ---------- year ---------- */
+function setYear(y){
+  YEAR=+y;const t=T();
+  $("year").value=YEAR;$("yearOut").textContent=Math.floor(YEAR);
+  const cost=Math.pow(10,-(YEAR-2026));
+  $("tokenOut").textContent="token cost "+(cost>=.1?(cost).toFixed(2).replace(/\.?0+$/,""):"1/"+Math.round(1/cost).toLocaleString("en-US"))+"×";
+  $("gPhys").style.width=lerp(80,45,t)+"%";$("gSig").style.width=lerp(12,85,t)+"%";
+  $("gPhysT").textContent=YEAR<2028?"Pays now, during the build-out.":"Still scarce, but power gets regulated.";
+  $("gSigT").textContent=YEAR<2028?"Small today. Pays after the build-out.":"Where most of the margin lands.";
+  renderLayers();renderQueue();renderBars();renderTest();
+}
+$("year").oninput=e=>{stopPlay();setYear(e.target.value)};
+let raf=null;
+function stopPlay(){if(raf){cancelAnimationFrame(raf);raf=null;$("play").textContent="▶";$("play").setAttribute("aria-label","Play the years")}}
+$("play").onclick=()=>{
+  if(raf){stopPlay();return}
+  if(YEAR>=2030)setYear(2026);
+  $("play").textContent="❚❚";$("play").setAttribute("aria-label","Pause");
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce){setYear(2030);stopPlay();return}
+  let last=performance.now();
+  const step=now=>{const dt=(now-last)/1000;last=now;const y=Math.min(2030,YEAR+dt*0.6);setYear(y);
+    if(y>=2030){stopPlay();return}raf=requestAnimationFrame(step)};
+  raf=requestAnimationFrame(step);
+};
+
+setYear(2026);setScn(HOME.gap,HOME.ratio);
 </script>
 </body>
 </html>
