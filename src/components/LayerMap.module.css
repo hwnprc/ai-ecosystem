@@ -1,75 +1,345 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.toggle {
+  display: inline-flex;
+  gap: 16px;
+}
+
+.toggle button,
+.moneyBtn {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 0 0 2px;
+  border-bottom: 1px solid transparent;
+}
+
+.toggle button.on {
+  color: var(--foreground);
+  border-bottom-color: var(--foreground);
+}
+
+.moneyBtn {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 12px;
+  color: var(--foreground);
+}
+
+.moneyBtn.on {
+  background: var(--foreground);
+  color: var(--background);
+  border-color: var(--foreground);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  gap: 20px;
+}
+
 .stack {
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--border);
+  gap: 6px;
+}
+
+.consumer {
+  position: relative;
+  border: 1.5px solid var(--foreground);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  font-weight: 500;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.coin {
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--foreground);
+  animation: drop 1.4s infinite ease-in;
+}
+
+@keyframes drop {
+  from { transform: translate(-50%, -20px); opacity: 0; }
+  40% { opacity: 1; }
+  to { transform: translate(-50%, 10px); opacity: 0; }
 }
 
 .layer {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.layer:hover {
+  border-color: var(--muted);
+}
+
+.open {
+  border-color: var(--foreground);
+}
+
+.head {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
   align-items: baseline;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.label h2 {
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.label p {
-  margin-top: 2px;
-  font-size: 0.85rem;
-  color: var(--muted);
-  max-width: 32ch;
-}
-
-.companies {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 24px;
-}
-
-.company {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0;
-  padding: 0;
+  gap: 12px;
+  padding: 14px 16px 6px;
   border: 0;
   background: transparent;
   text-align: left;
 }
 
-/* Shape, not color: filled square = big tech, open square = startup. */
-.bigtech .name::before {
+.tall .head {
+  padding-top: 20px;
+}
+
+.name {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.state {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.stateLabel {
+  display: inline-block;
+}
+
+.meter {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.meter i {
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: var(--foreground);
+}
+
+.companies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 16px 14px;
+}
+
+.tall .companies {
+  padding-bottom: 22px;
+}
+
+.company {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--background);
+  font-size: 0.9rem;
+}
+
+.company:hover {
+  border-color: var(--foreground);
+}
+
+.bigtech .cname::before {
   content: "■ ";
   font-size: 0.7em;
   vertical-align: 0.1em;
 }
 
-.startup .name::before {
+.startup .cname::before {
   content: "□ ";
   font-size: 0.7em;
   vertical-align: 0.1em;
 }
 
-.selected .name {
-  border-bottom: 1px solid var(--foreground);
+.selected {
+  border-color: var(--foreground);
+  box-shadow: inset 0 0 0 1px var(--foreground);
 }
 
-.name {
-  font-weight: 400;
-}
-
-.meta {
-  font-size: 0.75rem;
+.tag {
+  font-size: 0.7rem;
   color: var(--muted);
 }
 
+.empty {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.drawer {
+  padding: 0 16px;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--border);
+}
+
+.drawer > :first-child {
+  margin-top: 12px;
+}
+
+.drawer > :last-child {
+  margin-bottom: 14px;
+}
+
+.def {
+  color: var(--muted);
+}
+
+.lensLink {
+  align-self: flex-start;
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+}
+
+.lensLink:hover {
+  border-bottom-color: var(--foreground);
+}
+
+.arrows {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 72px 0 8px;
+  font-size: 0.82rem;
+}
+
+.up,
+.down {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 14px;
+}
+
+.up {
+  border-left: 2px solid var(--foreground);
+  padding-top: 18px;
+  padding-bottom: 80px;
+}
+
+.up::before {
+  content: "▲";
+  position: absolute;
+  left: -7px;
+  top: -10px;
+  font-size: 0.75rem;
+}
+
+.up b,
+.down b {
+  font-weight: 500;
+}
+
+.down {
+  color: var(--muted);
+  border-left: 2px solid var(--muted);
+  padding-top: 40px;
+  padding-bottom: 12px;
+}
+
+.down::after {
+  content: "▼";
+  position: absolute;
+  left: -7px;
+  bottom: -12px;
+  font-size: 0.75rem;
+}
+
+.down small {
+  font-size: 0.72rem;
+}
+
+.flowUp {
+  position: absolute;
+  left: -5px;
+  bottom: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--foreground);
+  animation: rise 2s infinite linear;
+}
+
+@keyframes rise {
+  from { bottom: 0; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  to { bottom: 100%; opacity: 0; }
+}
+
+.moneyNote {
+  font-size: 0.9rem;
+  color: var(--muted);
+  max-width: 62ch;
+}
+
 @media (max-width: 640px) {
-  .layer {
+  .grid {
     grid-template-columns: 1fr;
+  }
+
+  .arrows {
+    flex-direction: row;
+    gap: 16px;
+    padding: 0;
+    order: -1;
+  }
+
+  .up,
+  .down {
+    padding-block: 4px;
+  }
+
+  .up::before,
+  .down::after,
+  .flowUp {
+    display: none;
+  }
+
+  .head {
+    flex-direction: column;
+    gap: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coin,
+  .flowUp {
+    animation: none;
   }
 }
