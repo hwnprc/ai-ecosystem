@@ -19,7 +19,7 @@ export default function LensFrame({ index, lens, outcome, why, children }: Props
         <h2 id={`h-${lens.id}`} className={styles.h2}>{lens.title}</h2>
         <p className={styles.question}>{lens.question}</p>
       </div>
-      <p className={styles.idea}>{lens.quoteEn}</p>
+      <p className={styles.idea}>{lens.idea}</p>
       <div className={styles.diagram}>{children}</div>
       <div className={styles.outcome} aria-live="polite">
         <Mark good={outcome.good} />

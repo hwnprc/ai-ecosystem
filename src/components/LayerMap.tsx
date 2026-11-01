@@ -46,7 +46,7 @@ export default function LayerMap({ layers, companies, isActive, selectedId, onSe
       <div className={styles.grid}>
         <div className={styles.stack}>
           <div className={styles.consumer}>
-            Consumer <span lang="ko">· 소비자</span>
+            Consumer
             {money && <span className={styles.coin} aria-hidden="true" />}
           </div>
 

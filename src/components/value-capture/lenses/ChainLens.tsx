@@ -13,7 +13,7 @@ export default function ChainLens({ reading, onChange }: LensProps) {
   return (
     <div className={styles.chainWrap}>
       <div className={styles.chain} role="radiogroup" aria-label="Where it sits in the value chain">
-        <div className={styles.consumer}>Consumer · 소비자</div>
+        <div className={styles.consumer}>Consumer</div>
         {CHAIN.map((rung) => {
           const on = reading.chain === rung.id;
           return (

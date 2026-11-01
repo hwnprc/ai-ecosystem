@@ -17,7 +17,7 @@ Then open http://localhost:3000.
 
 ## Value capture explainer
 
-`/value-capture` is an interactive reading of the AI Frontier deck "가치는 어디로 가는가" (23 Oct 2026), run through the hosts' six thinking lenses.
+`/value-capture` is an interactive reading of the AI Frontier deck "Value Capture in AI Market Dynamics" (23 Oct 2026), run through the hosts' six thinking lenses.
 
 - Route: `src/app/value-capture/page.tsx`
 - Content: `src/data/valueCapture.ts`
