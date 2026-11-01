@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { AnimatePresence } from "motion/react";
 import type { MapData } from "@/lib/data";
 import type { CompanyKind } from "@/lib/types";
@@ -34,6 +35,9 @@ export default function Explorer({ data }: { data: MapData }) {
           What problems are big tech companies and AI startups each solving
           today, and where are they all heading?
         </p>
+        <Link href="/value-capture" className={styles.link}>
+          Where AI value goes →
+        </Link>
       </header>
 
       <div className={styles.controls}>
@@ -80,6 +84,11 @@ export default function Explorer({ data }: { data: MapData }) {
       </div>
 
       {direction && <p className={styles.directionNote}>{direction.summary}</p>}
+
+      <div className={styles.legend} aria-hidden="true">
+        <span>■ Big tech</span>
+        <span>□ Startup</span>
+      </div>
 
       <main className={styles.main}>
         {view === "map" ? (

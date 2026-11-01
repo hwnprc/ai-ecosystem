@@ -1,7 +1,6 @@
 .canvas {
   height: 640px;
   border: 1px solid var(--border);
-  border-radius: 14px;
   background: var(--surface);
   overflow: hidden;
 }
@@ -16,34 +15,35 @@
 .layerNode {
   background: transparent !important;
   border: 0 !important;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--muted) !important;
   text-align: left;
 }
 
 .companyNode {
-  border-radius: 10px !important;
-  font-weight: 600;
+  border-radius: 0 !important;
+  font-weight: 400;
+  background: var(--surface) !important;
   cursor: pointer;
 }
 
 .bigtech {
-  background: var(--bigtech-soft) !important;
-  border: 1px solid var(--bigtech) !important;
+  background: var(--foreground) !important;
+  color: var(--background) !important;
+  border: 1px solid var(--foreground) !important;
 }
 
 .startup {
-  background: var(--startup-soft) !important;
-  border: 1px solid var(--startup) !important;
+  border: 1px solid var(--foreground) !important;
 }
 
 .directionNode {
-  background: var(--accent) !important;
-  color: #fff !important;
-  border: 0 !important;
-  border-radius: 10px !important;
+  background: var(--surface) !important;
+  color: var(--foreground) !important;
+  border: 1px dashed var(--foreground) !important;
+  border-radius: 0 !important;
   width: 200px !important;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .canvas :global(.react-flow__handle) {
