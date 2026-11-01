@@ -1,0 +1,16 @@
+[
+  {
+    "id": "agents",
+    "title": "AI agents doing real work for businesses",
+    "status": "guess",
+    "companies": ["openai", "anthropic", "langchain", "browserbase", "decagon", "cursor", "microsoft-copilot"],
+    "summary": "Models are moving from answering questions to finishing tasks. This touches models, tools, and applications at once."
+  },
+  {
+    "id": "physical-ai",
+    "title": "Physical AI in real settings",
+    "status": "guess",
+    "companies": ["nvidia", "google-deepmind", "physical-intelligence", "figure", "tesla-optimus"],
+    "summary": "Robots are starting to use general-purpose models. This touches chips, models, and robot makers."
+  }
+]

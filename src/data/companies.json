@@ -1,0 +1,25 @@
+[
+  { "id": "nvidia", "name": "NVIDIA", "layer": "compute", "kind": "bigtech", "stage": "bigtech", "problem": "Making the GPUs that most AI models are trained and run on.", "verified": false },
+  { "id": "cerebras", "name": "Cerebras", "layer": "compute", "kind": "startup", "stage": "anchor", "problem": "Building wafer-sized chips to make AI training and inference faster.", "verified": false },
+  { "id": "groq", "name": "Groq", "layer": "compute", "kind": "startup", "stage": "anchor", "problem": "Designing chips built only for fast, cheap inference.", "verified": false },
+
+  { "id": "aws", "name": "AWS", "layer": "cloud", "kind": "bigtech", "stage": "bigtech", "problem": "Renting compute and AI services to businesses at scale.", "verified": false },
+  { "id": "google-cloud", "name": "Google Cloud", "layer": "cloud", "kind": "bigtech", "stage": "bigtech", "problem": "Offering AI compute, including its own TPU chips, as a service.", "verified": false },
+  { "id": "coreweave", "name": "CoreWeave", "layer": "cloud", "kind": "startup", "stage": "anchor", "problem": "A cloud built specifically for GPU-heavy AI workloads.", "verified": false },
+
+  { "id": "openai", "name": "OpenAI", "layer": "models", "kind": "startup", "stage": "anchor", "problem": "Training general-purpose models and selling access through ChatGPT and an API.", "verified": false },
+  { "id": "anthropic", "name": "Anthropic", "layer": "models", "kind": "startup", "stage": "anchor", "problem": "Training models with a focus on safety and reliability for businesses.", "verified": false },
+  { "id": "google-deepmind", "name": "Google DeepMind", "layer": "models", "kind": "bigtech", "stage": "bigtech", "problem": "Training Google's Gemini models and doing frontier research.", "verified": false },
+
+  { "id": "databricks", "name": "Databricks", "layer": "tools", "kind": "startup", "stage": "anchor", "problem": "Helping companies organize their data and build AI on top of it.", "verified": false },
+  { "id": "langchain", "name": "LangChain", "layer": "tools", "kind": "startup", "stage": "early", "problem": "Open-source tools for building apps and agents on top of models.", "verified": false },
+  { "id": "browserbase", "name": "Browserbase", "layer": "tools", "kind": "startup", "stage": "early", "problem": "Running web browsers in the cloud so AI agents can use websites.", "verified": false },
+
+  { "id": "cursor", "name": "Cursor", "layer": "applications", "kind": "startup", "stage": "anchor", "problem": "An AI code editor that writes and edits code with developers.", "verified": false },
+  { "id": "decagon", "name": "Decagon", "layer": "applications", "kind": "startup", "stage": "early", "problem": "AI agents that handle customer support conversations.", "verified": false },
+  { "id": "microsoft-copilot", "name": "Microsoft Copilot", "layer": "applications", "kind": "bigtech", "stage": "bigtech", "problem": "Putting an AI assistant inside Office, Windows, and GitHub.", "verified": false },
+
+  { "id": "physical-intelligence", "name": "Physical Intelligence", "layer": "physical", "kind": "startup", "stage": "early", "problem": "General-purpose AI models that let robots handle many tasks.", "verified": false },
+  { "id": "figure", "name": "Figure", "layer": "physical", "kind": "startup", "stage": "anchor", "problem": "Building humanoid robots for factories and homes.", "verified": false },
+  { "id": "tesla-optimus", "name": "Tesla Optimus", "layer": "physical", "kind": "bigtech", "stage": "bigtech", "problem": "A humanoid robot built on Tesla's self-driving AI work.", "verified": false }
+]

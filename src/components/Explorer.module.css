@@ -1,0 +1,73 @@
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 16px 80px;
+}
+
+.header h1 {
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+}
+
+.question {
+  margin-top: 8px;
+  color: var(--muted);
+  max-width: 60ch;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 28px 0 12px;
+}
+
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.group button {
+  border: 0;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 0.9rem;
+}
+
+.group button:hover {
+  background: var(--border);
+}
+
+.group button.on {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.group button.onAccent {
+  background: var(--accent);
+  color: #fff;
+}
+
+.tag {
+  margin-left: 6px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+}
+
+.directionNote {
+  color: var(--muted);
+  margin-bottom: 12px;
+  max-width: 70ch;
+}
+
+.main {
+  margin-top: 12px;
+}
