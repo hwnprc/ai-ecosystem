@@ -17,7 +17,11 @@ Then open http://localhost:3000.
 
 ## Value capture explainer
 
-`/value-capture` is a standalone page. It is a click-through reading of the AI Frontier deck "가치는 어디로 가는가" (23 Oct 2026), mapped to the six layers. The file is `public/value-capture.html`. A rewrite in `next.config.ts` gives it the clean URL.
+`/value-capture` is an interactive reading of the AI Frontier deck "가치는 어디로 가는가" (23 Oct 2026), mapped to the six layers.
+
+- Route: `src/app/value-capture/page.tsx`
+- Content: `src/data/valueCapture.ts`
+- Components: `src/components/value-capture/`. `ValueCapture.tsx` holds the shared year state. Each section (year bar, layer stack, domain queue, startup test, margin bars, indicators, scenario map) is its own component that reads the year.
 
 ## Deploy on Vercel
 
