@@ -1,8 +1,42 @@
 [
-  { "id": "compute", "name": "Compute and chips", "definition": "The hardware AI runs on." },
-  { "id": "cloud", "name": "Cloud", "definition": "Rented computing power, so companies don't need their own data centers." },
-  { "id": "models", "name": "Foundation models", "definition": "Companies that train large AI models others build on." },
-  { "id": "tools", "name": "Infrastructure and tools", "definition": "What developers use to build products with models." },
-  { "id": "applications", "name": "Applications", "definition": "Products people and businesses use every day." },
-  { "id": "physical", "name": "Physical AI", "definition": "AI that acts in the physical world, such as robots." }
+  {
+    "id": "energy",
+    "name": "Energy",
+    "definition": "Power, land, and cooling for data centers.",
+    "now": { "label": "Scarce", "level": 3 },
+    "heading": { "label": "Scarce, then regulated", "level": 2 },
+    "note": "The deck calls power the \"ultimate moat\". Contracts are now priced in gigawatts, not GPUs."
+  },
+  {
+    "id": "compute",
+    "name": "Chips (compute)",
+    "definition": "The hardware AI runs on.",
+    "now": { "label": "Scarce", "level": 3 },
+    "heading": { "label": "Normalizing", "level": 2 },
+    "note": "A physical bottleneck with about 75% gross margin during the build-out. TPUs and custom chips spread it out later."
+  },
+  {
+    "id": "infra",
+    "name": "Infrastructure (AI factory)",
+    "definition": "Clouds, data centers, and developer tools that turn chips into usable AI.",
+    "now": { "label": "Thin margin", "level": 1 },
+    "heading": { "label": "Thin margin", "level": 1 },
+    "note": "Infra players keep 10% at most (AWS is the exception at 35%). Neoclouds that borrow to buy GPUs are a spread business."
+  },
+  {
+    "id": "models",
+    "name": "Models",
+    "definition": "Companies that train large AI models others build on.",
+    "now": { "label": "Frontier premium", "level": 2 },
+    "heading": { "label": "Commodity", "level": 1 },
+    "note": "Followers trail the frontier by about 4 months, and by about 6 weeks in coding. The price of the same capability falls about 10x a year."
+  },
+  {
+    "id": "applications",
+    "name": "Applications",
+    "definition": "Products people and businesses use, including robots doing physical work.",
+    "now": { "label": "Not here yet", "level": 1 },
+    "heading": { "label": "Value capture", "level": 3 },
+    "note": "Closest to the person paying. Wins if it owns the customer or the reward signal from a real operation."
+  }
 ]

@@ -4,7 +4,7 @@ An interactive map of the US AI ecosystem, built for my CP191 nano capstone.
 
 **Guiding question:** What problems are big tech companies and AI startups each solving today, and where are they all heading?
 
-The map stacks the industry in six layers, from chips at the bottom to physical AI on top. Each company is tagged as big tech or startup. Clicking a company shows its evidence in four signal types: money, hiring, launches, and language. Directions show how one trend cuts across several layers.
+The map stacks the industry in five layers from the AI Frontier deck's value chain slide: energy, chips, infrastructure, models, and applications, with the consumer on top. Closer to the consumer means more value capture. Each company is tagged as big tech or startup. Clicking a company shows its evidence in four signal types: money, hiring, launches, and language. Directions show how one trend cuts across several layers.
 
 ## Run it locally
 
@@ -17,7 +17,7 @@ Then open http://localhost:3000.
 
 ## Value capture explainer
 
-`/value-capture` is an interactive reading of the AI Frontier deck "가치는 어디로 가는가" (23 Oct 2026), mapped to the six layers.
+`/value-capture` is an interactive reading of the AI Frontier deck "Value Capture in AI Market Dynamics" (23 Oct 2026), run through the hosts' six thinking lenses.
 
 - Route: `src/app/value-capture/page.tsx`
 - Content: `src/data/valueCapture.ts`
@@ -43,7 +43,7 @@ All content is plain JSON in `src/data/`. The shapes are defined in `src/lib/typ
 
 | File | What it holds |
 | --- | --- |
-| `layers.json` | The six layers, each with a one-line definition |
+| `layers.json` | The five layers, each with a definition, today's and future value capture, and the deck's note |
 | `companies.json` | Each company's layer, big tech or startup, stage, and the problem it solves |
 | `signals.json` | Dated, sourced evidence for each company |
 | `directions.json` | Cross-layer directions and the companies they touch |

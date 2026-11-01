@@ -18,9 +18,8 @@ type Props = {
 const ROW = 110;
 const COL = 170;
 const COMPANY_X = 220;
-const DIRECTION_X = COMPANY_X + COL * 3 + 120;
 
-// Companies sit in their layer's row (physical AI on top). Directions sit on the right
+// Companies sit in their layer's row (applications on top). Directions sit on the right
 // with an edge to every company they cut across, so cross-layer reach is visible at a glance.
 export default function ConnectionsView({
   layers,
@@ -33,6 +32,8 @@ export default function ConnectionsView({
   const { nodes, edges } = useMemo(() => {
     const stack = [...layers].reverse();
     const nodes: Node[] = [];
+    const widest = Math.max(...layers.map((l) => companies.filter((c) => c.layer === l.id).length));
+    const DIRECTION_X = COMPANY_X + COL * widest + 120;
 
     stack.forEach((layer, row) => {
       nodes.push({

@@ -1,5 +1,5 @@
-// The thinking frameworks the AI Frontier Korea hosts (노정석, 박종현) use in the
-// 24 Oct 2026 episode and the 23 Oct deck "가치는 어디로 가는가".
+// The thinking frameworks the AI Frontier Korea hosts use in the 24 Oct 2026
+// episode and the 23 Oct deck "Value Capture in AI Market Dynamics".
 // The lens definitions are theirs. The company readings are this project's own
 // application of those lenses, not the hosts' views.
 
@@ -9,11 +9,8 @@ export type Lens = {
   id: LensId;
   title: string;
   question: string;
-  /** A short line from the episode, in the original Korean. */
-  quote: string;
-  /** What the quote says, in plain English. */
-  quoteEn: string;
-  who: string;
+  /** The lens's core idea, in plain English. */
+  idea: string;
 };
 
 export const LENSES: Lens[] = [
@@ -21,54 +18,42 @@ export const LENSES: Lens[] = [
     id: "chain",
     title: "Value chain",
     question: "Where in the chain does it sit, and is that spot scarce?",
-    quote: "Value capture는 희소한 곳으로 갑니다.",
-    quoteEn: "Value goes to whatever is scarce. In pharma the drug maker earns most. For a power strip on Coupang, whoever holds the shopper's eye earns most.",
-    who: "노정석",
+    idea: "Value goes to whatever is scarce. In pharma the drug maker earns most. For a power strip on Coupang, whoever holds the shopper's eye earns most.",
   },
   {
     id: "leak",
     title: "Leak test",
     question: "Is its advantage something that leaks?",
-    quote: "맥주 한 잔이면 퍼진다.",
-    quoteEn: "Recipes spread over one beer. Data gets resold to everyone within a year. Only compute and real operation signals stay put.",
-    who: "노정석",
+    idea: "Recipes spread over one beer. Data gets resold to everyone within a year. Only compute and real operation signals stay put.",
   },
   {
     id: "gaps",
     title: "Time gap and domain gap",
     question: "Does it live off being ahead, or off a domain general models can't reach?",
-    quote: "Domain gap과 time gap으로 나눠서 봐야 된다.",
-    quoteEn: "Split it in two. Time gap is how far the frontier leads followers, and it keeps shrinking. Domain gap is how far a general model is from what a field needs.",
-    who: "노정석",
+    idea: "Split it in two. Time gap is how far the frontier leads followers, and it keeps shrinking. Domain gap is how far a general model is from what a field needs.",
   },
   {
     id: "cycle",
     title: "Build-out cycle",
     question: "In which phase of the cycle does it make money?",
-    quote: "누군가의 시체를 즈려밟고 다음 구조가 생기는 거거든요.",
-    quoteEn: "Railroads, telecom, mobile: build-out, over-investment, correction, then an application boom. The next builder walks over the last one's ruins.",
-    who: "노정석",
+    idea: "Railroads, telecom, mobile: build-out, over-investment, correction, then an application boom. The next builder walks over the last one's ruins.",
   },
   {
     id: "lab",
     title: "Will a lab come for it?",
     question: "Can a frontier lab buy, build, or simulate its way in?",
-    quote: "데이터를 판매하는 사업자들이 어떤 데이터를 모아서 어디다 판매하고 있는가.",
-    quoteEn: "Watch what data vendors are collecting and who they sell it to. That shows which domain the labs take next.",
-    who: "박종현",
+    idea: "Watch what data vendors are collecting and who they sell it to. That shows which domain the labs take next.",
   },
   {
     id: "barbell",
     title: "Toyota or Ferrari",
     question: "Is it mass scale, a true niche, or stuck in the middle?",
-    quote: "Toyota가 되든지 Ferrari가 되든지 두 개만 남은 것 같다. 그 중간은 다 죽었다.",
-    quoteEn: "Only two things survive: the mass player and the true niche. In AI that means a frontier lab, or the owner of a domain operation loop. The middle dies.",
-    who: "노정석",
+    idea: "Only two things survive: the mass player and the true niche. In AI that means a frontier lab, or the owner of a domain operation loop. The middle dies.",
   },
 ];
 
 /* ---------- lens 1: value chain ---------- */
-// The stack from the deck's "오늘의 결론" slide (after Jensen's drawing):
+// The stack from the deck's "Today's conclusion" slide (after Jensen's drawing):
 // energy at the bottom, the consumer on top. Closer to the person paying means
 // more value capture. Infra players keep thin margins.
 export type ChainRung = "energy" | "compute" | "infra" | "models" | "apps";

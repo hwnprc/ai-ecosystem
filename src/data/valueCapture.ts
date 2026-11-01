@@ -1,5 +1,5 @@
 // Market-level content for the "Zoom out" part of /value-capture: the seven
-// indicators and four scenarios from the AI Frontier deck "가치는 어디로 가는가"
+// indicators and four scenarios from the AI Frontier deck "Value Capture in AI Market Dynamics"
 // (Chester, 23 Oct 2026). Figures are as reported in the deck and have not been
 // checked against original sources.
 
