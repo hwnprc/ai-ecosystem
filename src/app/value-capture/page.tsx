@@ -1,12 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans } from "next/font/google";
 import ValueCapture from "@/components/value-capture/ValueCapture";
-
-const plex = IBM_Plex_Sans({
-  variable: "--font-plex",
-  subsets: ["latin"],
-  weight: ["300", "400", "500"],
-});
 
 export const metadata: Metadata = {
   title: "Where AI Value Goes",
@@ -15,9 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function ValueCapturePage() {
-  return (
-    <div className={plex.variable}>
-      <ValueCapture />
-    </div>
-  );
+  return <ValueCapture />;
 }
