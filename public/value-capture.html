@@ -5,146 +5,119 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Where AI Value Goes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&display=swap">
 <style>
-/* Layout: one narrow reading column; each section is a small instrument you click through. */
+/* Layout: one quiet column, black on white, hairlines only. Color is never used to carry meaning. */
 :root{
-  --bg:#f5f7f8; --surface:#ffffff; --ink:#14212b; --muted:#5a6873; --line:#d9e0e5;
-  --phys:#a8650f; --phys-soft:#f6ead8;
-  --sig:#0e7a70; --sig-soft:#dcf0ed;
-  --leak:#b3423a; --leak-soft:#f6e1df;
-  --mid:#5866a8; --mid-soft:#e3e6f4;
-  --display:"Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
-  --body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --bg:#ffffff; --fg:#111111; --muted:#8a8a8a; --line:#e6e6e6;
+  --font:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --phys:var(--fg); --sig:var(--fg); --leak:var(--fg); --mid:var(--fg);
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0f161c; --surface:#16212a; --ink:#e6edf1; --muted:#9aa8b2; --line:#2a3842;
-  --phys:#e3a04a; --phys-soft:#33281a; --sig:#4cc3b5; --sig-soft:#16312e;
-  --leak:#e7786f; --leak-soft:#3a2120; --mid:#9aa6e6; --mid-soft:#232845; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0f161c; --surface:#16212a; --ink:#e6edf1; --muted:#9aa8b2; --line:#2a3842;
-  --phys:#e3a04a; --phys-soft:#33281a; --sig:#4cc3b5; --sig-soft:#16312e;
-  --leak:#e7786f; --leak-soft:#3a2120; --mid:#9aa6e6; --mid-soft:#232845; color-scheme:dark}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0e0e0e;--fg:#ececec;--muted:#7d7d7d;--line:#262626;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e0e0e;--fg:#ececec;--muted:#7d7d7d;--line:#262626;color-scheme:dark}
 
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
-  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:32px 64px}
-.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
-h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
-h1{font-size:clamp(2rem,6vw,3.1rem);font-weight:800;letter-spacing:-.02em}
-h2{font-size:1.55rem;font-weight:700;letter-spacing:-.01em}
-h3{font-size:1.1rem;font-weight:700}
-p{margin:0;max-width:65ch}
-.eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.sec{display:flex;flex-direction:column;gap:16px}
-.lead{color:var(--muted);font-size:1.02rem}
-button{font:inherit;color:inherit;cursor:pointer}
-button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--sig);outline-offset:2px}
-.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.6;font-variant-numeric:tabular-nums;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:72px 96px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:88px}
+h1,h2,h3{font-weight:500;margin:0;line-height:1.25;text-wrap:balance}
+h1{font-size:clamp(1.7rem,5vw,2.2rem);letter-spacing:-.015em}
+h2{font-size:1.25rem}
+h3{font-size:1rem}
+p{margin:0;max-width:60ch}
+.eyebrow{font-size:.75rem;color:var(--muted)}
+.sec{display:flex;flex-direction:column;gap:20px}
+.lead{color:var(--muted)}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0;text-align:left}
+button:focus-visible{outline:1px solid var(--fg);outline-offset:3px}
 
-/* hero */
-.hero{display:flex;flex-direction:column;gap:20px}
-.twin{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.scar{border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:6px;min-width:0}
-.scar.p{background:var(--phys-soft);border-left:4px solid var(--phys)}
-.scar.s{background:var(--sig-soft);border-left:4px solid var(--sig)}
-.scar b{font-family:var(--display);font-size:1.05rem}
-.scar small{color:var(--muted);font-size:.85rem}
-.leakline{font-size:.95rem;color:var(--muted)}
-.leakline strong{color:var(--leak)}
+.hero{display:flex;flex-direction:column;gap:24px}
+.twin{display:grid;grid-template-columns:1fr 1fr;gap:24px;border-top:1px solid var(--line);padding-top:20px}
+.scar{display:flex;flex-direction:column;gap:4px;min-width:0}
+.scar b{font-weight:500}
+.scar span,.scar small{color:var(--muted);font-size:.9rem}
+.leakline{color:var(--muted);font-size:.95rem}
+.leakline strong{color:var(--fg);font-weight:500}
 
-/* layer stack */
-.stackgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px;align-items:start}
-.stack{display:flex;flex-direction:column-reverse;gap:6px}
-.layer{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;
-  background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;transition:transform .15s,border-color .15s}
-.layer:hover{transform:translateX(3px)}
-.layer[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 4px 0 0 var(--ink)}
-.layer span:first-child{font-weight:600}
-.pill{font-family:var(--mono);font-size:.7rem;padding:2px 8px;border-radius:99px;white-space:nowrap}
-.pill.win{background:var(--sig-soft);color:var(--sig)}
-.pill.phys{background:var(--phys-soft);color:var(--phys)}
-.pill.lose{background:var(--leak-soft);color:var(--leak)}
-.pill.mid{background:var(--mid-soft);color:var(--mid)}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
-.panel dl{margin:0;display:grid;gap:10px}
-.panel dt{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.pill{font-size:.78rem;color:var(--muted);white-space:nowrap}
+.pill.win{color:var(--fg)}
+
+.toggle{display:inline-flex;gap:16px;font-size:.9rem}
+.toggle button{color:var(--muted);padding-bottom:2px;border-bottom:1px solid transparent}
+.toggle button[aria-pressed="true"]{color:var(--fg);border-bottom-color:var(--fg)}
+
+.stackgrid{display:flex;flex-direction:column;gap:24px}
+.stack{display:flex;flex-direction:column-reverse;border-top:1px solid var(--line)}
+.layer{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);color:var(--muted)}
+.layer:last-child{border-top:0}
+.layer[aria-pressed="true"]{color:var(--fg)}
+.layer[aria-pressed="true"] span:first-child::before{content:"→ "}
+.panel{display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel dl{margin:0;display:grid;gap:14px}
+.panel dt{font-size:.75rem;color:var(--muted)}
 .panel dd{margin:0}
-.toggle{display:inline-flex;border:1px solid var(--line);border-radius:99px;padding:3px;background:var(--surface);align-self:flex-start}
-.toggle button{border:0;background:transparent;padding:6px 14px;border-radius:99px;font-size:.9rem}
-.toggle button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 
-/* attention queue */
-.queue{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.zone{border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
-.zone.closed{background:var(--leak-soft)}
-.zone.closing{background:var(--mid-soft)}
-.zone.open{background:var(--sig-soft)}
-.zone header{display:flex;flex-direction:column;gap:2px}
-.zone header b{font-family:var(--display)}
-.zone header small{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:4px 11px;font-size:.88rem}
-.chip[aria-pressed="true"]{border-color:var(--ink);font-weight:600}
-.arrow{font-family:var(--mono);font-size:.78rem;color:var(--muted);display:flex;justify-content:space-between}
-.note{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-height:3.5em}
+.queue{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;border-top:1px solid var(--line);padding-top:16px}
+.zone{display:flex;flex-direction:column;gap:10px;min-width:0}
+.zone header{display:flex;flex-direction:column}
+.zone header b{font-weight:500}
+.zone header small{font-size:.75rem;color:var(--muted)}
+.chips{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.presets{display:flex;flex-wrap:wrap;gap:6px 16px}
+.chip{color:var(--muted);font-size:.92rem;border-bottom:1px solid transparent}
+.chip[aria-pressed="true"]{color:var(--fg);border-bottom-color:var(--fg)}
+.arrow{font-size:.75rem;color:var(--muted);display:flex;justify-content:space-between;gap:12px}
+.note{min-height:3.2em}
 
-/* test */
-.presets{display:flex;flex-wrap:wrap;gap:6px}
-.qs{display:flex;flex-direction:column;gap:8px}
-.q{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
-.q p{font-size:.95rem}
-.q small{display:block;color:var(--muted);font-size:.82rem}
-.yn{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
-.yn button{border:0;background:transparent;padding:6px 12px;font-size:.85rem}
-.yn button+button{border-left:1px solid var(--line)}
-.yn button[aria-pressed="true"][data-v="no"]{background:var(--sig);color:var(--bg)}
-.yn button[aria-pressed="true"][data-v="yes"]{background:var(--leak);color:var(--bg)}
-.verdict{border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:4px;transition:background .2s}
-.verdict b{font-family:var(--display);font-size:1.15rem}
+.qs{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.q{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)}
+.q small{display:block;color:var(--muted);font-size:.85rem}
+.yn{display:inline-flex;gap:12px;font-size:.9rem}
+.yn button{color:var(--muted);border-bottom:1px solid transparent}
+.yn button[aria-pressed="true"]{color:var(--fg);border-bottom-color:var(--fg)}
+.verdict{display:flex;flex-direction:column;gap:6px}
+.verdict b{font-weight:500;font-size:1.1rem}
+.verdict span{color:var(--muted)}
 .meter{display:flex;gap:4px}
-.meter i{flex:1;height:8px;border-radius:4px;background:var(--line)}
+.meter i{width:10px;height:10px;border:1px solid var(--fg)}
 
-/* margin bars */
-.bars{display:flex;flex-direction:column;gap:10px}
-.bar{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:center}
-.bar .lbl{font-weight:600;font-size:.92rem}
-.track{background:var(--line);border-radius:6px;height:26px;position:relative;overflow:hidden}
-.fill{height:100%;border-radius:6px;transition:width .5s ease;display:flex;align-items:center;padding-left:8px;font-family:var(--mono);font-size:.75rem;color:var(--bg);white-space:nowrap}
-.barnote{grid-column:2;font-size:.85rem;color:var(--muted);margin-top:-4px}
-.caption{font-size:.82rem;color:var(--muted)}
+.bars{display:flex;flex-direction:column;gap:14px}
+.bar{display:grid;grid-template-columns:150px minmax(0,1fr);gap:4px 16px;align-items:center}
+.bar .lbl{font-size:.9rem}
+.track{height:1px;background:var(--line);position:relative;overflow:visible}
+.fill{position:absolute;left:0;top:-1px;height:3px;background:var(--fg)!important;transition:width .5s ease;font-size:0}
+.barval{grid-column:2;font-size:.8rem;color:var(--muted)}
+.barnote{display:none}
+.caption{font-size:.8rem;color:var(--muted)}
 
-/* indicators */
-.inds{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
-.ind{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:8px}
-.ind .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
-.ind b{font-size:.95rem}
-.ind .more{font-size:.88rem;color:var(--muted)}
+.inds{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.ind{display:flex;flex-direction:column;gap:6px;padding:14px 0;border-bottom:1px solid var(--line)}
+.ind .top{display:flex;justify-content:space-between;gap:16px;align-items:baseline}
+.ind b{font-weight:400}
+.ind .more{font-size:.9rem;color:var(--muted)}
 .ind[aria-expanded="false"] .more{display:none}
-.ind .hint{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+.ind .hint{display:none}
 
-/* scenarios */
-.grid2{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;align-items:stretch}
-.axis{font-family:var(--mono);font-size:.72rem;color:var(--muted);display:flex;align-items:center;justify-content:center;text-align:center;padding:4px}
+.grid2{display:grid;grid-template-columns:auto 1fr 1fr;gap:0;border-top:1px solid var(--line)}
+.axis{font-size:.72rem;color:var(--muted);display:flex;align-items:center;justify-content:center;text-align:center;padding:8px}
 .axis.v{writing-mode:vertical-rl;transform:rotate(180deg)}
-.scn{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:6px;min-width:0}
-.scn[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 -4px 0 var(--ink)}
-.scn .pct{font-family:var(--display);font-size:1.8rem;font-weight:800;line-height:1}
-.scn small{color:var(--muted);font-size:.85rem}
+.scn{display:flex;flex-direction:column;gap:4px;padding:16px;border-bottom:1px solid var(--line);border-left:1px solid var(--line);color:var(--muted);min-width:0}
+.scn[aria-pressed="true"]{color:var(--fg)}
+.scn .pct{font-size:1.6rem;font-weight:300;line-height:1.1}
+.scn b{font-weight:400;font-size:.9rem}
 
-.foot{font-size:.88rem;color:var(--muted);display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:20px}
+.foot{font-size:.85rem;color:var(--muted);display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:24px}
+.foot b{font-weight:500;color:var(--fg)}
 .foot ul{margin:0;padding-left:18px}
 
-@media (max-width:640px){
-  .stackgrid{grid-template-columns:1fr}
-  .queue{grid-template-columns:1fr}
-  .twin{grid-template-columns:1fr}
+@media (max-width:600px){
+  body{padding-block:40px 64px}
+  .wrap{gap:64px}
+  .queue,.twin{grid-template-columns:1fr}
   .bar{grid-template-columns:1fr}
-  .barnote{grid-column:1}
-  .grid2{grid-template-columns:auto 1fr 1fr}
-  .scn{padding:10px}
-  .scn .pct{font-size:1.4rem}
+  .barval{grid-column:1}
+  .scn{padding:12px}
+  .scn .pct{font-size:1.3rem}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -154,20 +127,20 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--sig);outli
 <main class="wrap">
 
 <header class="hero">
-  <span class="eyebrow">Notes on the AI Frontier deck · 23 Oct 2026</span>
+  <span class="eyebrow">23 Oct 2026</span>
   <h1>Value goes to scarcity that does not leak.</h1>
-  <p class="lead">An interactive reading of "가치는 어디로 가는가" for the US AI ecosystem map. Click through each part. The deck says there are only two kinds of lasting scarcity.</p>
+  <p class="lead">A reading of the AI Frontier deck "가치는 어디로 가는가" for the US AI ecosystem map.</p>
   <div class="twin">
     <div class="scar p"><b>Physical bottlenecks</b><span>Power, land, HBM, packaging, chips.</span><small>Pays during the build-out.</small></div>
     <div class="scar s"><b>Operation signals</b><span>Outcomes that only show up in real life. Did they buy again? Did the repair hold 90 days?</span><small>Pays after the build-out.</small></div>
   </div>
-  <p class="leakline"><strong>Everything else leaks.</strong> Recipes spread in months. Data gets resold in about a year. Open models trail the frontier by about 4 months, and by about 6 weeks in coding. The same capability gets about 10x cheaper each year.</p>
+  <p class="leakline"><strong>Everything else leaks.</strong> Open models trail the frontier by about 4 months. The same capability gets about 10x cheaper each year.</p>
 </header>
 
 <section class="sec" aria-labelledby="h-layers">
-  <span class="eyebrow">1 · Your six map layers</span>
+  <span class="eyebrow">01</span>
   <h2 id="h-layers">Who keeps the margin on each layer?</h2>
-  <p class="lead">Pick a layer. Switch between today and 2030 to see where the deck expects value to move.</p>
+  
   <div class="toggle" role="group" aria-label="Time">
     <button id="t-now" aria-pressed="true" data-time="now">Today</button>
     <button id="t-2030" aria-pressed="false" data-time="later">By 2030</button>
@@ -179,46 +152,46 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--sig);outli
 </section>
 
 <section class="sec" aria-labelledby="h-queue">
-  <span class="eyebrow">2 · The lab attention queue</span>
+  <span class="eyebrow">02</span>
   <h2 id="h-queue">Which domains will the big labs take next?</h2>
-  <p class="lead">Labs go first where work is verifiable, digital, and large. Attention is roughly market size divided by how hard the data is to buy. The further right a domain sits, the longer a startup's window.</p>
+  <p class="lead">Labs go first where work is verifiable, digital, and large.</p>
   <div class="queue" id="queue"></div>
-  <div class="arrow"><span>Lab attention arrives first</span><span>Startup window stays open longer →</span></div>
+  <div class="arrow"><span>Labs arrive first</span><span>Startup window lasts longer →</span></div>
   <div class="note" id="queueNote" aria-live="polite"></div>
 </section>
 
 <section class="sec" aria-labelledby="h-test">
-  <span class="eyebrow">3 · The four-question test</span>
+  <span class="eyebrow">03</span>
   <h2 id="h-test">Can a lab take this startup's spot?</h2>
-  <p class="lead">The deck's rule: a safe domain answers "no" to all four questions. Load an example or answer for a company on your map.</p>
+  <p class="lead">A safe domain answers no to all four.</p>
   <div class="presets" id="presets"></div>
   <div class="qs" id="qs"></div>
   <div class="verdict" id="verdict" aria-live="polite"></div>
 </section>
 
 <section class="sec" aria-labelledby="h-margin">
-  <span class="eyebrow">4 · Margin migration</span>
+  <span class="eyebrow">04</span>
   <h2 id="h-margin">As tokens get cheaper, who gains?</h2>
-  <p class="lead">Token prices fall about 10x a year. Whoever prices per outcome, not per token, keeps that drop as margin. Bars show the deck's direction of change, not measured shares.</p>
+  <p class="lead">Whoever prices per outcome keeps the falling token cost as margin.</p>
   <div class="toggle" role="group" aria-label="Time for margins">
     <button id="m-now" aria-pressed="true" data-m="now">Today</button>
     <button id="m-2030" aria-pressed="false" data-m="later">2030</button>
   </div>
   <div class="bars" id="bars"></div>
-  <p class="caption">Known figures: chip gross margin about 75% today, lab inference margin about 70% (SemiAnalysis). Bar lengths for 2030 are illustrative of the deck's claims.</p>
+  <p class="caption">Today: chip gross margin about 75%, lab inference margin about 70%. Other bar lengths show direction only.</p>
 </section>
 
 <section class="sec" aria-labelledby="h-ind">
-  <span class="eyebrow">5 · What to watch</span>
+  <span class="eyebrow">05</span>
   <h2 id="h-ind">Seven indicators, as read on 23 Oct</h2>
-  <p class="lead">Four tell you when the phase changes. Two tell you when the operator era starts. One tells you the thesis is wrong. Tap a card for details.</p>
+  
   <div class="inds" id="inds"></div>
 </section>
 
 <section class="sec" aria-labelledby="h-scn">
-  <span class="eyebrow">6 · Four scenarios</span>
+  <span class="eyebrow">06</span>
   <h2 id="h-scn">Where could the next three years go?</h2>
-  <p class="lead">Two questions decide it. Does industry revenue outgrow depreciation plus interest? Does the gap between open and frontier models close? The odds are the author's personal guess.</p>
+  <p class="lead">Odds are the author's personal guess.</p>
   <div class="grid2" id="scn"></div>
   <div class="note" id="scnNote" aria-live="polite"></div>
 </section>
@@ -352,13 +325,13 @@ function renderTest(){
     qs.appendChild(r);
   });
   const answered=ans.filter(Boolean).length, nos=ans.filter(a=>a==="no").length;
-  const meter=`<div class="meter">${ans.map(a=>`<i style="background:${a==="no"?"var(--sig)":a==="yes"?"var(--leak)":"var(--line)"}"></i>`).join("")}</div>`;
+  const meter=`<div class="meter">${ans.map(a=>`<i style="background:${a==="no"?"var(--fg)":"transparent"};border-color:${a?"var(--fg)":"var(--line)"}"></i>`).join("")}</div>`;
   let bg,title,txt;
   if(answered<4){bg="var(--surface)";title=`${answered} of 4 answered`;txt="Answer all four to see the verdict.";}
   else if(nos===4){bg="var(--sig-soft)";title="Defensible";txt="The signal can't be bought, simulated, or taken over. This is where the deck expects operators to win.";}
   else if(nos>=2){bg="var(--mid-soft)";title="Window, not a moat";txt="Some protection, but a lab can reach it. Check where it sits in the attention queue to see how long the window lasts.";}
   else{bg="var(--leak-soft)";title="A lab can take it";txt="The signal is buyable or replaceable. Expect labs or data vendors to close this gap.";}
-  verdict.style.background=bg;verdict.innerHTML=`<b>${title}</b>${meter}<span>${txt}</span>`;
+  verdict.innerHTML=`<b>${title}</b>${meter}<span>${txt}</span>`;
 }
 ans=[...PRESETS[3].a];curPreset=3;renderTest();
 
@@ -372,7 +345,7 @@ const BARS=[
 let mTime="now";const bars=document.getElementById("bars");
 function renderBars(){bars.innerHTML="";BARS.forEach(b=>{const v=mTime==="now"?b.now:b.later;
   const r=document.createElement("div");r.className="bar";
-  r.innerHTML=`<span class="lbl">${b.n}</span><div class="track"><div class="fill" style="width:${v}%;background:${b.c}">${mTime==="now"?b.nl:b.ll}</div></div>${mTime==="later"?`<span class="barnote">${b.note}</span>`:""}`;
+  r.innerHTML=`<span class="lbl">${b.n}</span><div class="track"><div class="fill" style="width:${v}%"></div></div><span class="barval">${mTime==="now"?b.nl:b.ll}</span>`;
   bars.appendChild(r)})}
 document.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{mTime=b.dataset.m;
   document.querySelectorAll("[data-m]").forEach(x=>x.setAttribute("aria-pressed",x===b));renderBars()});
@@ -390,7 +363,7 @@ const INDS=[
 const KIND={phase:"Phase change",operator:"Operator era",thesis:"Thesis check"};
 const inds=document.getElementById("inds");
 INDS.forEach((d,i)=>{const b=document.createElement("button");b.className="ind";b.id="ind-"+i;b.setAttribute("aria-expanded","false");
-  b.innerHTML=`<div class="top"><b>${i+1}. ${d[0]}</b><span class="pill ${PILL[d[3]]}">${d[2]}</span></div><span class="hint">${KIND[d[1]]}</span><span class="more">${d[4]}</span>`;
+  b.innerHTML=`<div class="top"><b>${i+1}. ${d[0]}</b><span class="pill">${d[2]}</span></div><span class="hint">${KIND[d[1]]}</span><span class="more">${d[4]}</span>`;
   b.onclick=()=>b.setAttribute("aria-expanded",b.getAttribute("aria-expanded")!=="true");inds.appendChild(b)});
 
 const SCN=[
