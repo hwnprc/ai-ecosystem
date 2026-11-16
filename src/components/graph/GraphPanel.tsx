@@ -386,6 +386,11 @@ function CompanyView({ c, data, onFocus, linkType, setLinkType, setHoverLink }: 
         {c.tag ? ` · ${c.tag}` : ""}
       </p>
       <h2>{c.name}</h2>
+      {c.website && (
+        <a className={styles.website} href={c.website} target="_blank" rel="noopener noreferrer">
+          {siteOf(c.website)} ↗
+        </a>
+      )}
       <h3>Problem it works on</h3>
       <p>{c.problem}</p>
       {c.heading ? (

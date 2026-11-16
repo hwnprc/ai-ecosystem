@@ -37,6 +37,7 @@ export type Company = {
   tier?: "deep" | "wide";
   facts?: Fact[]; // why it qualifies: funding rounds and valuations
   heading?: Heading; // where it is heading, from its latest concrete move
+  website?: string; // official site, from src/data/websites.json
 };
 
 // One short sentence on where a company is heading, resting on one sourced move.
