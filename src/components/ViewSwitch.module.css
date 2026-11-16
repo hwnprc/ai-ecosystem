@@ -1,0 +1,31 @@
+.switch {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.85rem;
+  background: var(--card, var(--surface));
+}
+
+.switch > * {
+  padding: 6px 14px;
+  text-decoration: none;
+}
+
+.switch a:hover {
+  background: var(--border);
+}
+
+.on {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+/* On the layer map page it floats in the corner, like on the graph. */
+.floating {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 10;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}

@@ -8,6 +8,8 @@ import type { CompanyKind } from "@/lib/types";
 import LayerMap from "./LayerMap";
 import ConnectionsView from "./ConnectionsView";
 import CompanyPanel from "./CompanyPanel";
+import ViewSwitch from "./ViewSwitch";
+import switchStyles from "./ViewSwitch.module.css";
 import styles from "./Explorer.module.css";
 
 type View = "map" | "connections";
@@ -29,6 +31,7 @@ export default function Explorer({ data }: { data: MapData }) {
 
   return (
     <div className={styles.page}>
+      <ViewSwitch current="map" className={switchStyles.floating} />
       <header className={styles.header}>
         <h1>Where is AI heading?</h1>
         <p className={styles.question}>

@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import type { MapData } from "@/lib/data";
 import type { LinkType } from "@/lib/types";
 import { layoutGraph } from "@/lib/graphLayout";
 import RingGraph from "./RingGraph";
+import ViewSwitch from "../ViewSwitch";
 import GraphPanel, { Mark } from "./GraphPanel";
 import { HOME, focusToParam, paramToFocus, sameFocus, type Focus } from "./focus";
 import styles from "./Graph.module.css";
@@ -135,10 +135,7 @@ export default function GraphExplorer({ data }: { data: MapData }) {
           onFocus={go}
         />
 
-        <div className={styles.switch}>
-          <span className={styles.switchOn}>Graph</span>
-          <Link href="/">Layer map</Link>
-        </div>
+        <ViewSwitch current="graph" className={styles.switch} />
       </section>
     </div>
   );

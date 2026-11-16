@@ -402,22 +402,6 @@
   position: absolute;
   right: 0;
   bottom: 0;
-  display: flex;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-  font-size: 0.85rem;
-  background: var(--card);
-}
-
-.switch > * {
-  padding: 6px 14px;
-  text-decoration: none;
-}
-
-.switchOn {
-  background: var(--foreground);
-  color: var(--background);
 }
 
 .svg {
