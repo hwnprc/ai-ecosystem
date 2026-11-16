@@ -1,9 +1,10 @@
 import { scalePoint } from "d3";
 import type { Company, Layer, LayerId, Link } from "./types";
 
-// Rings from the center out. The customer sits in the middle, so a ring's
-// distance from the center is its distance from the person paying.
-export const RING_ORDER: LayerId[] = ["applications", "models", "infra", "compute", "energy"];
+// Rings from the center out. AGI sits in the middle as the place everyone is
+// heading. The labs that train models are closest; the layers that feed them
+// (infrastructure, chips, energy) come next; applications built on top sit outermost.
+export const RING_ORDER: LayerId[] = ["models", "infra", "compute", "energy", "applications"];
 
 export const VIEW = 1000; // the SVG viewBox is VIEW x VIEW, centered on 0,0
 export const CENTER_R = 52;

@@ -491,3 +491,8 @@
   align-self: center;
   overflow: visible;
 }
+
+.center text.hubText {
+  font-size: 22px;
+  letter-spacing: 0.04em;
+}

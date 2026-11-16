@@ -45,8 +45,8 @@ export default function GraphExplorer({ data }: { data: MapData }) {
     switch (focus.kind) {
       case "home":
         return null;
-      case "customer":
-        return new Set(data.companies.filter((c) => c.layer === "applications").map((c) => c.id));
+      case "agi":
+        return new Set(data.companies.filter((c) => c.layer === "models").map((c) => c.id));
       case "layer":
         return new Set(data.companies.filter((c) => c.layer === focus.id).map((c) => c.id));
       case "direction":

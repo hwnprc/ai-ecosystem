@@ -70,13 +70,13 @@ export default function GraphPanel({ data, focus, onFocus }: Props) {
       const members = data.companies.filter((c) => c.layer === layer.id);
       return (
         <div className={styles.panelBody}>
-          <p className={styles.kicker}>Layer {RING_ORDER.indexOf(layer.id) + 1} of 5, counting out from the customer</p>
+          <p className={styles.kicker}>Layer {RING_ORDER.indexOf(layer.id) + 1} of 5, counting out from AGI</p>
           <h2>{layer.name}</h2>
           <p>{layer.definition}</p>
           <dl className={styles.states}>
-            <dt>Today</dt>
+            <dt>Value today</dt>
             <dd>{layer.now.label}</dd>
-            <dt>Heading</dt>
+            <dt>Value later</dt>
             <dd>{layer.heading.label}</dd>
           </dl>
           <p className={styles.muted}>{layer.note}</p>
@@ -119,20 +119,20 @@ export default function GraphPanel({ data, focus, onFocus }: Props) {
     }
   }
 
-  if (focus.kind === "customer") {
-    const apps = data.companies.filter((c) => c.layer === "applications");
+  if (focus.kind === "agi") {
+    const labs = data.companies.filter((c) => c.layer === "models");
     return (
       <div className={styles.panelBody}>
         <p className={styles.kicker}>The center</p>
-        <h2>The customer</h2>
-        <p>The people and businesses who pay for AI. Every ring sits at some distance from them.</p>
+        <h2>AGI</h2>
+        <p>The direction many AI companies say they are heading: AI that can do most work a person can.</p>
         <p className={styles.muted}>
-          The closer a layer is to the customer, the more value it can capture over time. Today chips and
-          energy capture the most. Applications are where value is expected to move.
+          Each ring sits at some distance from it. Model labs are closest. Infrastructure, chips, and energy feed
+          them. Applications sit on the outside and turn progress into products.
         </p>
-        <h3>Pays these companies directly</h3>
+        <h3>Racing toward it directly</h3>
         <ul className={styles.list}>
-          {apps.map((c) => (
+          {labs.map((c) => (
             <CompanyRow key={c.id} c={c} sub={kindLabel(c)} onFocus={onFocus} />
           ))}
         </ul>
@@ -158,7 +158,7 @@ export default function GraphPanel({ data, focus, onFocus }: Props) {
         ))}
       </div>
 
-      <h3>Layers, from the customer out</h3>
+      <h3>Layers, from AGI out</h3>
       <ul className={styles.list}>
         {RING_ORDER.map((id) => {
           const l = layerOf(id);
@@ -169,9 +169,7 @@ export default function GraphPanel({ data, focus, onFocus }: Props) {
                 <Mark layer={id} kind="startup" />
                 <span>
                   {l.name}
-                  <span className={styles.rowSub}>
-                    {l.now.label} → {l.heading.label}
-                  </span>
+                  <span className={styles.rowSub}>{l.definition}</span>
                 </span>
               </button>
             </li>
@@ -181,7 +179,7 @@ export default function GraphPanel({ data, focus, onFocus }: Props) {
 
       <h3>How to read it</h3>
       <p className={styles.note}>
-        Each ring is one layer, with its own shape and color. Arrows show how companies connect across layers.
+        AGI is in the center. Each ring is one layer, with its own shape and color. Arrows show how companies connect across layers.
         Click any company, ring name, or the center.
       </p>
       <ul className={styles.legend}>

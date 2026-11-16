@@ -87,7 +87,7 @@ export default function RingGraph({ rings, nodes, links, focus, lit, onFocus }: 
     selectedId ? l.from === selectedId || l.to === selectedId : lit ? lit.has(l.from) && lit.has(l.to) : false;
   const dim = (id: string) => lit !== null && !lit.has(id);
   const showAllLabels = nodes.length < LABEL_ALL_UNDER;
-  const customerOn = focus.kind === "customer";
+  const agiOn = focus.kind === "agi";
   const colors = [HUB_COLOR, ...Object.values(LAYER_STYLE).map((s) => s.color)];
 
   return (
@@ -95,7 +95,7 @@ export default function RingGraph({ rings, nodes, links, focus, lit, onFocus }: 
       className={styles.svg}
       viewBox={`${-VIEW / 2} ${-VIEW / 2} ${VIEW} ${VIEW}`}
       role="img"
-      aria-label="The AI ecosystem as rings around the customer. Each ring is one layer. Arrows show who invests in, runs on, builds on, or buys power from whom."
+      aria-label="The AI ecosystem as rings around AGI, the direction everyone is heading. Each ring is one layer. Arrows show who invests in, runs on, builds on, or buys power from whom."
       onClick={() => onFocus({ kind: "home" })}
     >
       <defs>
@@ -129,9 +129,9 @@ export default function RingGraph({ rings, nodes, links, focus, lit, onFocus }: 
       })}
 
       <g ref={turnRef}>
-        {/* The customer pays the applications ring: arrows from the hub out to it. */}
+        {/* The model labs head straight for AGI: arrows from their ring in to the hub. */}
         {nodes
-          .filter((n) => n.layer === "applications")
+          .filter((n) => n.layer === "models")
           .map((n) => {
             const len = Math.hypot(n.x, n.y);
             const sx = (n.x / len) * (CENTER_R + 6);
@@ -139,9 +139,9 @@ export default function RingGraph({ rings, nodes, links, focus, lit, onFocus }: 
             const mx = (sx + n.x) / 2;
             const my = (sy + n.y) / 2;
             return (
-              <g key={`spoke-${n.id}`} className={`${styles.spoke} ${customerOn ? styles.spokeOn : ""}`} stroke={HUB_COLOR}>
-                <line x1={sx} y1={sy} x2={mx} y2={my} markerEnd={`url(#${markerId(HUB_COLOR)})`} />
-                <line x1={mx} y1={my} x2={n.x} y2={n.y} />
+              <g key={`spoke-${n.id}`} className={`${styles.spoke} ${agiOn ? styles.spokeOn : ""}`} stroke={HUB_COLOR}>
+                <line x1={n.x} y1={n.y} x2={mx} y2={my} markerEnd={`url(#${markerId(HUB_COLOR)})`} />
+                <line x1={mx} y1={my} x2={sx} y2={sy} />
               </g>
             );
           })}
@@ -234,27 +234,24 @@ export default function RingGraph({ rings, nodes, links, focus, lit, onFocus }: 
         </text>
       ))}
 
-      {/* The customer, in the middle */}
+      {/* AGI, in the middle */}
       <g
-        className={`${styles.center} ${customerOn ? styles.centerOn : ""}`}
+        className={`${styles.center} ${agiOn ? styles.centerOn : ""}`}
         role="button"
         tabIndex={0}
-        aria-label="The customer"
+        aria-label="AGI"
         onClick={(e) => {
           e.stopPropagation();
-          onFocus({ kind: "customer" });
+          onFocus({ kind: "agi" });
         }}
         onKeyDown={(e) => {
-          if (e.key === "Enter") onFocus({ kind: "customer" });
+          if (e.key === "Enter") onFocus({ kind: "agi" });
         }}
       >
         <path d={starburst(CENTER_R)} fill="var(--graph-bg)" />
-        <path d={starburst(CENTER_R)} fill={customerOn ? HUB_COLOR : `${HUB_COLOR}40`} stroke={HUB_COLOR} strokeWidth={1.6} />
-        <text y={-3} fill={customerOn ? "#fff" : HUB_COLOR}>
-          The
-        </text>
-        <text y={14} fill={customerOn ? "#fff" : HUB_COLOR}>
-          customer
+        <path d={starburst(CENTER_R)} fill={agiOn ? HUB_COLOR : `${HUB_COLOR}40`} stroke={HUB_COLOR} strokeWidth={1.6} />
+        <text y={7} fill={agiOn ? "#fff" : HUB_COLOR} className={styles.hubText}>
+          AGI
         </text>
       </g>
     </svg>
