@@ -38,7 +38,7 @@ export default function Explorer({ data }: { data: MapData }) {
         <Link href="/value-capture" className={styles.link}>
           Where AI value goes →
         </Link>
-        <Link href="/graph" className={styles.link}>
+        <Link href="/ai-ecosystem-graph" className={styles.link}>
           See who connects to whom →
         </Link>
       </header>
