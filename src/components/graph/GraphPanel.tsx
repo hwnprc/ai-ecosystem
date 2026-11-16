@@ -353,6 +353,30 @@ function siteOf(url: string) {
   }
 }
 
+// The company's logo, taken from its website's icon. Falls back to its first letter.
+function Logo({ c }: { c: Company }) {
+  const [failed, setFailed] = useState(false);
+  const domain = c.website ? siteOf(c.website) : null;
+  if (!domain || failed) {
+    return (
+      <span className={styles.logo} aria-hidden="true">
+        {c.name.charAt(0)}
+      </span>
+    );
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- a small remote icon, no need for image optimization
+    <img
+      className={styles.logo}
+      src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
+      alt=""
+      width={32}
+      height={32}
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
 function CompanyView({ c, data, onFocus, linkType, setLinkType, setHoverLink }: { c: Company } & ViewProps) {
   const [tab, setTab] = useState<"signals" | "connected">("connected");
   const [closed, setClosed] = useState<Set<string>>(new Set());
@@ -394,12 +418,15 @@ function CompanyView({ c, data, onFocus, linkType, setLinkType, setHoverLink }: 
         {layer?.name} · {kindLabel(c)}
         {c.tag ? ` · ${c.tag}` : ""}
       </p>
-      <h2>{c.name}</h2>
-      {c.website && (
-        <a className={styles.website} href={c.website} target="_blank" rel="noopener noreferrer">
-          {siteOf(c.website)} ↗
-        </a>
-      )}
+      <div className={styles.titleRow}>
+        <Logo c={c} />
+        <h2>{c.name}</h2>
+        {c.website && (
+          <a className={styles.website} href={c.website} target="_blank" rel="noopener noreferrer">
+            {siteOf(c.website)} ↗
+          </a>
+        )}
+      </div>
       <h3>Problem it works on</h3>
       <p>{c.problem}</p>
       {c.heading ? (
