@@ -6,6 +6,7 @@ import careers from "@/data/careers.json";
 import links from "@/data/links.json";
 import funded from "@/data/funded.json";
 import headings from "@/data/headings.json";
+import websites from "@/data/websites.json";
 import type { CareerRow, Company, Direction, FundedRow, Heading, Layer, Link, Signal } from "./types";
 
 export type MapData = {
@@ -31,6 +32,7 @@ export const mapData: MapData = {
 const rows = funded as FundedRow[];
 const factsById = new Map(rows.map((r) => [r.id, r.facts]));
 const headingById = new Map((headings as Heading[]).map((h) => [h.id, h]));
+const siteById = websites as Record<string, string>;
 const deepIds = new Set(mapData.companies.map((c) => c.id));
 const wide: Company[] = rows
   .filter((r) => !deepIds.has(r.id) && r.name && r.layer && r.problem)
@@ -45,6 +47,7 @@ const wide: Company[] = rows
     tier: "wide",
     facts: r.facts,
     heading: headingById.get(r.id),
+    website: siteById[r.id],
   }));
 
 export const graphData: MapData = {
@@ -55,6 +58,7 @@ export const graphData: MapData = {
       tier: "deep" as const,
       facts: factsById.get(c.id) ?? [],
       heading: headingById.get(c.id),
+      website: siteById[c.id],
     })),
     ...wide,
   ],
