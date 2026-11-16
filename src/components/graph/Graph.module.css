@@ -744,9 +744,34 @@
   font-size: 0.8rem;
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.titleRow h2 {
+  margin: 0;
+}
+
+.logo {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  object-fit: contain;
+  padding: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #555;
+}
+
 .website {
-  display: inline-block;
-  margin-top: -4px;
   font-size: 0.9rem;
   color: var(--muted);
 }
