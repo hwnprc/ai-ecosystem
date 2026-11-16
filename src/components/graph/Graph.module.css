@@ -1,9 +1,12 @@
 /* Full-screen graph: panel on the left, rings on the right. Each ring has its own color. */
 
 .page {
-  --graph-bg: #ecebe6;
+  --graph-bg: #f5f3ef; /* warm paper */
   --graph-node: #ffffff;
   --card: #ffffff;
+  --glow: rgba(224, 122, 58, 0.16); /* AGI orange, faint */
+  --dots: rgba(60, 50, 40, 0.09);
+  --shadow: 0 1px 2px rgba(40, 30, 20, 0.04), 0 8px 24px rgba(40, 30, 20, 0.06);
   background: var(--graph-bg);
   display: grid;
   grid-template-columns: minmax(300px, 360px) 1fr;
@@ -15,9 +18,12 @@
 
 @media (prefers-color-scheme: dark) {
   .page {
-    --graph-bg: #141414;
-    --graph-node: #1c1c1c;
-    --card: #1c1c1c;
+    --graph-bg: #0e1014; /* deep night blue */
+    --graph-node: #171a20;
+    --card: #15181d;
+    --glow: rgba(224, 122, 58, 0.18);
+    --dots: rgba(255, 255, 255, 0.06);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
   }
 }
 
@@ -33,6 +39,7 @@
 .crumbs {
   font-size: 0.9rem;
   background: var(--card);
+  box-shadow: var(--shadow);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px 14px;
@@ -62,6 +69,7 @@
 
 .panelCard {
   background: var(--card);
+  box-shadow: var(--shadow);
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -241,6 +249,11 @@
 
 .stage {
   position: relative;
+  border-radius: 16px;
+  /* A soft glow behind AGI, over a faint dot grid, so the eye starts at the center. */
+  background:
+    radial-gradient(circle at 50% 50%, var(--glow) 0, transparent 38%),
+    radial-gradient(var(--dots) 1px, transparent 1.2px) 0 0 / 22px 22px;
   min-height: 0;
   display: flex;
   align-items: center;
@@ -626,4 +639,32 @@
 
 .signalText {
   font-size: 0.9rem;
+}
+
+/* ---------- Home view takeaways ---------- */
+
+.findings {
+  list-style: none;
+  display: grid;
+  gap: 10px;
+  font-size: 0.92rem;
+}
+
+.findings li {
+  padding-left: 12px;
+  border-left: 2px solid #e07a3a;
+}
+
+.inlineLink {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-size: 0.85rem;
+}
+
+.inlineLink:hover {
+  color: var(--foreground);
 }

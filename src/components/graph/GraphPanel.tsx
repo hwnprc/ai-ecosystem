@@ -150,10 +150,32 @@ export default function GraphPanel(props: Props) {
   const toCheck = data.links.filter((l) => l.confidence && l.confidence !== "high").length;
   return (
     <div className={styles.panelBody}>
+      <p className={styles.kicker}>A map of {data.companies.length} AI companies</p>
       <h2>Where is AI heading?</h2>
-      <p className={styles.muted}>
+      <p>
         What problems are big tech companies and AI startups each solving today, and where are they all heading?
       </p>
+      <p className={styles.muted}>
+        AGI sits in the middle as the place many of them say they are going. Each ring is one layer of the
+        stack. Arrows show who funds, powers, and builds on whom.
+      </p>
+
+      <h3>What the map shows so far</h3>
+      <ul className={styles.findings}>
+        {findings(data).map((f) => (
+          <li key={f.text}>
+            {f.text}
+            {f.focus && (
+              <>
+                {" "}
+                <button className={styles.inlineLink} onClick={() => onFocus(f.focus!)}>
+                  {f.cta}
+                </button>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
 
       <h3>Directions</h3>
       <div className={styles.chips}>
@@ -215,6 +237,54 @@ export default function GraphPanel(props: Props) {
   );
 }
 
+// Short, data-driven takeaways for the home view. They update as the data grows.
+function findings(data: MapData): { text: string; cta?: string; focus?: Focus }[] {
+  const byId = new Map(data.companies.map((c) => [c.id, c]));
+  const degree = new Map<string, number>();
+  for (const l of data.links) {
+    degree.set(l.from, (degree.get(l.from) ?? 0) + 1);
+    degree.set(l.to, (degree.get(l.to) ?? 0) + 1);
+  }
+  const top = [...degree].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([id, n]) => ({ c: byId.get(id)!, n }));
+  const invests = data.links.filter((l) => l.type === "invests");
+  const intoLabs = invests.filter((l) => byId.get(l.to)?.layer === "models").length;
+  const fromBig = invests.filter((l) => byId.get(l.from)?.kind === "bigtech" || l.from === "nvidia").length;
+  const labs = data.companies.filter((c) => c.layer === "models").map((c) => c.id);
+  const suppliers = new Set(data.links.filter((l) => l.type === "runs-on" && labs.includes(l.from)).map((l) => l.to));
+  const apps = data.companies.filter((c) => c.layer === "applications");
+  const appStartups = apps.filter((c) => c.kind === "startup").length;
+  const pct = (a: number, b: number) => (b ? Math.round((100 * a) / b) : 0);
+
+  const out: { text: string; cta?: string; focus?: Focus }[] = [];
+  if (top[0]) {
+    out.push({
+      text: `${top[0].c.name} is the most connected company, with ${top[0].n} links. ${top[1]?.c.name} and ${top[2]?.c.name} come next.`,
+      cta: `See ${top[0].c.name}`,
+      focus: { kind: "company", id: top[0].c.id },
+    });
+  }
+  if (invests.length) {
+    out.push({
+      text: `${pct(fromBig, invests.length)}% of the investments come from big tech and chipmakers. ${pct(intoLabs, invests.length)}% go into model labs.`,
+    });
+  }
+  if (suppliers.size) {
+    out.push({
+      text: `Model labs rent compute from ${suppliers.size} different clouds and chipmakers. Most labs use more than one.`,
+      cta: "See the labs",
+      focus: { kind: "layer", id: "models" },
+    });
+  }
+  if (apps.length) {
+    out.push({
+      text: `${appStartups} of ${apps.length} application companies are startups. Big tech mostly sits in the inner rings.`,
+      cta: "See applications",
+      focus: { kind: "layer", id: "applications" },
+    });
+  }
+  return out;
+}
+
 // Where a source link points, shown instead of a bare "Source".
 function siteOf(url: string) {
   try {
@@ -266,8 +336,17 @@ function CompanyView({ c, data, onFocus, linkType, setLinkType, setHoverLink }: 
         {c.tag ? ` · ${c.tag}` : ""}
       </p>
       <h2>{c.name}</h2>
+      <h3>Problem it works on</h3>
       <p>{c.problem}</p>
-      {!c.verified && <p className={styles.note}>Not yet checked by hand.</p>}
+      {signals[0] && (
+        <>
+          <h3>Latest move</h3>
+          <p>
+            {signals[0].summary} <time className={styles.date}>{signals[0].date.slice(0, 7)}</time>
+          </p>
+        </>
+      )}
+      {!c.verified && <p className={styles.note}>Facts come from news sources and are not yet checked by hand.</p>}
 
       <div className={styles.tabs} role="tablist">
         <button role="tab" aria-selected={tab === "connected"} onClick={() => setTab("connected")}>
