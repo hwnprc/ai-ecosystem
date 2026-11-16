@@ -422,8 +422,15 @@ function CompanyView({ c, data, onFocus, linkType, setLinkType, setHoverLink }: 
         <Logo c={c} />
         <h2>{c.name}</h2>
         {c.website && (
-          <a className={styles.website} href={c.website} target="_blank" rel="noopener noreferrer">
-            {siteOf(c.website)} ↗
+          <a
+            className={styles.website}
+            href={c.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${c.name} website (${siteOf(c.website)})`}
+            title={siteOf(c.website)}
+          >
+            ↗
           </a>
         )}
       </div>
