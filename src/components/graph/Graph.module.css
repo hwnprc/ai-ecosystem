@@ -1,0 +1,493 @@
+/* Full-screen graph: panel on the left, rings on the right. Each ring has its own color. */
+
+.page {
+  --graph-bg: #ecebe6;
+  --graph-node: #ffffff;
+  --card: #ffffff;
+  background: var(--graph-bg);
+  display: grid;
+  grid-template-columns: minmax(300px, 360px) 1fr;
+  gap: 16px;
+  height: 100vh;
+  padding: 16px;
+  overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  .page {
+    --graph-bg: #141414;
+    --graph-node: #1c1c1c;
+    --card: #1c1c1c;
+  }
+}
+
+/* ---------- Left panel ---------- */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.crumbs {
+  font-size: 0.9rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.crumbs button {
+  border: 0;
+  background: none;
+  padding: 0;
+}
+
+.crumbs button:hover {
+  text-decoration: underline;
+}
+
+.crumbs > button:first-child {
+  font-weight: 500;
+}
+
+.sep {
+  color: var(--muted);
+  margin: 0 6px;
+}
+
+.panelCard {
+  background: var(--card);
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.panelBody {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panelBody h2 {
+  font-size: 1.6rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+.panelBody h3 {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 14px;
+}
+
+.kicker {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.note {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.states {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 12px;
+  font-size: 0.9rem;
+}
+
+.states dt {
+  color: var(--muted);
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.list > li + li {
+  border-top: 1px solid var(--border);
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  padding: 8px 0;
+}
+
+.row:hover {
+  text-decoration: underline;
+}
+
+.rowSub {
+  display: block;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.linkNote {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin: -4px 0 8px 20px;
+}
+
+.signal {
+  padding: 6px 0;
+  font-size: 0.9rem;
+}
+
+.signal time {
+  color: var(--muted);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  border: 1px solid var(--border);
+  background: none;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.chip:hover {
+  border-color: var(--foreground);
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabs button {
+  border: 0;
+  background: none;
+  padding: 8px 0;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.tabs button[aria-selected="true"] {
+  color: var(--foreground);
+  border-bottom-color: var(--foreground);
+}
+
+.legend {
+  list-style: none;
+  display: grid;
+  gap: 4px;
+  font-size: 0.85rem;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legendLine {
+  stroke: var(--foreground);
+  stroke-width: 1.5;
+}
+
+.dot,
+.dotFilled,
+.dotRound {
+  flex: none;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--foreground);
+}
+
+.dotFilled {
+  background: var(--foreground);
+}
+
+.dotRound {
+  border-radius: 50%;
+}
+
+/* ---------- Graph stage ---------- */
+
+.stage {
+  position: relative;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.topbar > * {
+  pointer-events: auto;
+}
+
+.searchBtn,
+.arrows button {
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.arrows {
+  display: flex;
+  gap: 4px;
+}
+
+.arrows button:disabled {
+  color: var(--muted);
+  cursor: default;
+}
+
+.search {
+  position: relative;
+  width: min(280px, 60vw);
+}
+
+.search input {
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  background: var(--card);
+  border: 1px solid var(--foreground);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+.search ul {
+  list-style: none;
+  position: absolute;
+  top: 40px;
+  left: 0;
+  right: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.search li button {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  padding: 6px 10px;
+}
+
+.search li button:hover {
+  background: var(--border);
+}
+
+.switch {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.85rem;
+  background: var(--card);
+}
+
+.switch > * {
+  padding: 6px 14px;
+  text-decoration: none;
+}
+
+.switchOn {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+  max-height: calc(100vh - 32px);
+  user-select: none;
+}
+
+.ring {
+  fill: none;
+  stroke-width: 1.2;
+  stroke-dasharray: 4 4;
+  opacity: 0.8;
+  transition: stroke-width 0.3s;
+}
+
+.ringOn {
+  stroke-width: 2.5;
+  opacity: 1;
+}
+
+.ringName {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-anchor: middle;
+  cursor: pointer;
+  paint-order: stroke;
+  stroke: var(--graph-bg);
+  stroke-width: 5px;
+}
+
+.ringName:hover {
+  text-decoration: underline;
+}
+
+.spoke {
+  stroke-width: 1.2;
+  opacity: 0.25;
+  transition: opacity 0.3s;
+}
+
+.spokeOn {
+  opacity: 1;
+  stroke-width: 1.8;
+}
+
+.edge {
+  fill: none;
+  stroke-width: 1.2;
+  opacity: 0.45;
+  transition: opacity 0.3s, stroke-width 0.3s;
+}
+
+.edgeOn {
+  opacity: 1;
+  stroke-width: 1.8;
+}
+
+.edgeFaded {
+  opacity: 0.07;
+}
+
+.node {
+  cursor: pointer;
+  outline: none;
+  transition: opacity 0.3s;
+}
+
+.nodeDim {
+  opacity: 0.18;
+}
+
+.hit {
+  fill: transparent;
+}
+
+.mark {
+  transition: stroke-width 0.2s;
+}
+
+.node:hover .mark,
+.node:focus-visible .mark {
+  stroke-width: 2.6;
+}
+
+.nodeSelected .mark {
+  stroke-width: 2.6;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--graph-bg);
+  stroke-width: 4px;
+  pointer-events: none;
+}
+
+.labelSelected {
+  font-size: 15px;
+}
+
+.center {
+  cursor: pointer;
+}
+
+.center text {
+  font-size: 14px;
+  font-weight: 500;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+
+/* Phone and narrow screens: graph on top, panel below. */
+@media (max-width: 800px) {
+  .page {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    height: auto;
+    overflow: visible;
+  }
+
+  .stage {
+    order: -1;
+    padding: 44px 0 40px;
+  }
+
+  .svg {
+    max-height: none;
+  }
+
+  .panelCard {
+    overflow: visible;
+  }
+}
+
+.markIcon {
+  flex: none;
+  align-self: center;
+  overflow: visible;
+}

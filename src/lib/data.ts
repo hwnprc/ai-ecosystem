@@ -3,7 +3,8 @@ import companies from "@/data/companies.json";
 import signals from "@/data/signals.json";
 import directions from "@/data/directions.json";
 import careers from "@/data/careers.json";
-import type { CareerRow, Company, Direction, Layer, Signal } from "./types";
+import links from "@/data/links.json";
+import type { CareerRow, Company, Direction, Layer, Link, Signal } from "./types";
 
 export type MapData = {
   layers: Layer[];
@@ -11,6 +12,7 @@ export type MapData = {
   signals: Signal[];
   directions: Direction[];
   careers: CareerRow[];
+  links: Link[];
 };
 
 export const mapData: MapData = {
@@ -19,4 +21,5 @@ export const mapData: MapData = {
   signals: signals as Signal[],
   directions: directions as Direction[],
   careers: careers as CareerRow[],
+  links: links as Link[],
 };

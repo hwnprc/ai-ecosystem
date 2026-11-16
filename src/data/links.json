@@ -1,0 +1,22 @@
+[
+  {"from": "microsoft-copilot", "to": "openai", "type": "builds-on", "note": "Copilot runs on OpenAI's GPT models. Microsoft is also OpenAI's largest investor.", "source": "", "verified": false},
+  {"from": "cursor", "to": "anthropic", "type": "builds-on", "note": "Cursor lets developers use Claude models inside the editor.", "source": "", "verified": false},
+  {"from": "cursor", "to": "openai", "type": "builds-on", "note": "Cursor lets developers use GPT models inside the editor.", "source": "", "verified": false},
+  {"from": "databricks", "to": "anthropic", "type": "builds-on", "note": "Databricks offers Claude models to its business customers.", "source": "", "verified": false},
+  {"from": "aws", "to": "anthropic", "type": "invests", "note": "Amazon is one of Anthropic's largest investors.", "source": "", "verified": false},
+  {"from": "google-cloud", "to": "anthropic", "type": "invests", "note": "Google has invested in Anthropic.", "source": "", "verified": false},
+  {"from": "anthropic", "to": "aws", "type": "runs-on", "note": "Anthropic trains models on AWS, including Amazon's Trainium chips.", "source": "", "verified": false},
+  {"from": "anthropic", "to": "google-cloud", "type": "runs-on", "note": "Anthropic also uses Google's TPU chips through Google Cloud.", "source": "", "verified": false},
+  {"from": "google-deepmind", "to": "google-cloud", "type": "runs-on", "note": "Gemini is trained on Google's own TPUs.", "source": "", "verified": false},
+  {"from": "openai", "to": "coreweave", "type": "runs-on", "note": "OpenAI signed large multi-year compute contracts with CoreWeave.", "source": "", "verified": false},
+  {"from": "openai", "to": "cerebras", "type": "runs-on", "note": "OpenAI agreed to buy inference compute from Cerebras.", "source": "", "verified": false},
+  {"from": "openai", "to": "physical-intelligence", "type": "invests", "note": "OpenAI took part in a Physical Intelligence funding round.", "source": "", "verified": false},
+  {"from": "coreweave", "to": "nvidia", "type": "runs-on", "note": "CoreWeave's cloud is built on NVIDIA GPUs.", "source": "", "verified": false},
+  {"from": "nvidia", "to": "coreweave", "type": "invests", "note": "NVIDIA owns a stake in CoreWeave.", "source": "", "verified": false},
+  {"from": "aws", "to": "nvidia", "type": "runs-on", "note": "AWS rents out NVIDIA GPUs alongside its own chips.", "source": "", "verified": false},
+  {"from": "google-cloud", "to": "nvidia", "type": "runs-on", "note": "Google Cloud rents out NVIDIA GPUs alongside its own TPUs.", "source": "", "verified": false},
+  {"from": "nvidia", "to": "databricks", "type": "invests", "note": "NVIDIA has invested in Databricks.", "source": "", "verified": false},
+  {"from": "nvidia", "to": "figure", "type": "invests", "note": "NVIDIA invested in Figure's 2024 round.", "source": "", "verified": false},
+  {"from": "tesla-optimus", "to": "nvidia", "type": "runs-on", "note": "Tesla trains its driving and robot models on NVIDIA GPUs, among others.", "source": "", "verified": false},
+  {"from": "google-cloud", "to": "commonwealth-fusion", "type": "buys-power", "note": "Google agreed to buy power from CFS's first fusion plant and invested in the company.", "source": "", "verified": false}
+]

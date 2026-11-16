@@ -57,3 +57,19 @@ export type CareerRow = {
   startup: string;
   bigtech: string;
 };
+
+// A relationship between two companies, read "from <type> to".
+// invests:    from puts money into to
+// runs-on:    from trains or serves its AI on to's chips or cloud
+// builds-on:  from uses to's models inside its product
+// buys-power: from has agreed to buy electricity from to
+export type LinkType = "invests" | "runs-on" | "builds-on" | "buys-power";
+
+export type Link = {
+  from: string; // Company.id
+  to: string; // Company.id
+  type: LinkType;
+  note: string; // one short sentence on what the link is
+  source: string; // URL, empty until checked
+  verified: boolean;
+};
