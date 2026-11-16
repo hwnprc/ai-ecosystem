@@ -19,10 +19,13 @@ export function ringRadius(index: number) {
   return INNER + ((OUTER - INNER) * index) / (RING_ORDER.length - 1);
 }
 
-// Spread each layer's companies evenly around its ring. Each ring starts at a
-// slightly different angle so nodes on neighbouring rings do not line up.
+// Spread each layer's companies evenly around its ring.
 // Researched companies sit on the ring. The wide tier sits on a band just inside it.
 export const WIDE_INSET = 24;
+
+// The ring's name, shown in a tag at the top of the ring, and that tag's width in SVG units.
+export const ringLabel = (layer: Layer) => layer.name.replace(/ \(.*\)$/, "").toUpperCase();
+export const ringTagWidth = (label: string) => label.length * 8.6 + 18;
 export function layoutGraph(layers: Layer[], companies: Company[]) {
   const rings: Ring[] = RING_ORDER.map((id, i) => ({
     layer: layers.find((l) => l.id === id)!,
@@ -30,25 +33,25 @@ export function layoutGraph(layers: Layer[], companies: Company[]) {
   })).filter((ring) => ring.layer);
 
   const nodes: PlacedNode[] = [];
-  const place = (members: Company[], r: number, offset: number) => {
+  // Spread companies between `gap` degrees either side of the top, leaving room for the ring's name tag.
+  const place = (members: Company[], r: number, gap: number) => {
     const scale = scalePoint<string>()
       .domain(members.map((c) => c.id))
-      .range([0, 360 - 360 / Math.max(members.length, 1)]);
+      .range(members.length === 1 ? [180, 180] : [gap, 360 - gap]);
     members.forEach((c) => {
-      const angle = (scale(c.id) ?? 0) + offset;
+      const angle = (scale(c.id) ?? 0) - 90;
       const rad = (angle * Math.PI) / 180;
       nodes.push({ ...c, angle, r, x: r * Math.cos(rad), y: r * Math.sin(rad) });
     });
   };
-  rings.forEach((ring, i) => {
+  rings.forEach((ring) => {
     const members = companies.filter((c) => c.layer === ring.layer.id);
-    const offset = -90 + i * 23; // degrees, start near the top
-    place(members.filter((c) => c.tier !== "wide"), ring.r, offset);
-    place(
-      members.filter((c) => c.tier === "wide").sort((a, b) => a.name.localeCompare(b.name)),
-      ring.r - WIDE_INSET,
-      offset + 4,
-    );
+    const half = ringTagWidth(ringLabel(ring.layer)) / 2 + 16;
+    const gap = (Math.asin(Math.min(1, half / ring.r)) * 180) / Math.PI;
+    const deep = members.filter((c) => c.tier !== "wide");
+    const wide = members.filter((c) => c.tier === "wide").sort((a, b) => a.name.localeCompare(b.name));
+    place(deep, ring.r, gap);
+    place(wide, ring.r - WIDE_INSET, gap);
   });
   return { rings, nodes };
 }

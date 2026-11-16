@@ -11,6 +11,8 @@ import {
   VIEW,
   edgeHalves,
   rotationToBottom,
+  ringLabel,
+  ringTagWidth,
   starburst,
   linkKey,
   type NodeShape,
@@ -227,21 +229,35 @@ export default function RingGraph({ rings, nodes, links, focus, lit, hoverLink, 
         })}
       </g>
 
-      {/* Ring names sit outside the turning group so they stay put */}
-      {rings.map((ring) => (
-        <text
-          key={`name-${ring.layer.id}`}
-          y={-ring.r - 8}
-          fill={LAYER_STYLE[ring.layer.id].color}
-          className={styles.ringName}
-          onClick={(e) => {
-            e.stopPropagation();
-            onFocus({ kind: "layer", id: ring.layer.id });
-          }}
-        >
-          {ring.layer.name.replace(/ \(.*\)$/, "").toUpperCase()}
-        </text>
-      ))}
+      {/* Ring names sit outside the turning group so they stay put. Each is a solid tag
+          drawn above lines and nodes, so nothing cuts through the letters. */}
+      {rings.map((ring) => {
+        const name = ringLabel(ring.layer);
+        const w = ringTagWidth(name);
+        const color = LAYER_STYLE[ring.layer.id].color;
+        return (
+          <g
+            key={`name-${ring.layer.id}`}
+            transform={`translate(0,${-ring.r})`}
+            className={styles.ringName}
+            role="button"
+            tabIndex={0}
+            aria-label={`${name} layer`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onFocus({ kind: "layer", id: ring.layer.id });
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") onFocus({ kind: "layer", id: ring.layer.id });
+            }}
+          >
+            <rect x={-w / 2} y={-11} width={w} height={22} rx={11} stroke={color} className={styles.ringTag} />
+            <text y={4.5} fill={color}>
+              {name}
+            </text>
+          </g>
+        );
+      })}
 
       {/* AGI, in the middle */}
       <g

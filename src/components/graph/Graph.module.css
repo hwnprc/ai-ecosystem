@@ -441,17 +441,24 @@
 }
 
 .ringName {
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-anchor: middle;
   cursor: pointer;
-  paint-order: stroke;
-  stroke: var(--graph-bg);
-  stroke-width: 5px;
+  outline: none;
 }
 
-.ringName:hover {
+.ringName text {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-anchor: middle;
+}
+
+.ringTag {
+  fill: var(--graph-bg);
+  stroke-width: 1;
+}
+
+.ringName:hover text,
+.ringName:focus-visible text {
   text-decoration: underline;
 }
 
