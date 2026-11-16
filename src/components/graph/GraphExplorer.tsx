@@ -8,6 +8,7 @@ import RingGraph from "./RingGraph";
 import ViewSwitch from "../ViewSwitch";
 import GraphPanel, { Mark } from "./GraphPanel";
 import { HOME, focusToParam, paramToFocus, sameFocus, type Focus } from "./focus";
+import { buildTour, type TourStep } from "./tour";
 import styles from "./Graph.module.css";
 
 type History = { stack: Focus[]; at: number };
@@ -24,19 +25,31 @@ export default function GraphExplorer({ data }: { data: MapData }) {
     [data.links, linkType],
   );
 
-  // Open the view named in the URL, if any.
+  // The guided tour: a few findings, one step at a time. null = not touring.
+  const steps = useMemo(() => buildTour(data, nodes), [data, nodes]);
+  const [tourAt, setTourAt] = useState<number | null>(null);
+  const step = tourAt === null ? null : steps[tourAt];
+
+  // Open the view named in the URL, if any. "?tour=1" opens the tour at its first step.
   useEffect(() => {
-    const start = paramToFocus(new URLSearchParams(window.location.search).get("n"));
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- reading the URL only works after mount
+    const q = new URLSearchParams(window.location.search);
+    const t = Number(q.get("tour"));
+    if (t >= 1) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reading the URL only works after mount
+      setTourAt(Math.min(t, steps.length) - 1);
+      return;
+    }
+    const start = paramToFocus(q.get("n"));
     if (start.kind !== "home") setHistory({ stack: [HOME, start], at: 1 });
-  }, []);
+  }, [steps.length]);
 
   // Keep the URL in step so a view can be shared.
   useEffect(() => {
     const p = focusToParam(focus);
-    const url = p ? `?n=${encodeURIComponent(p)}` : window.location.pathname;
+    const url =
+      tourAt !== null ? `?tour=${tourAt + 1}` : p ? `?n=${encodeURIComponent(p)}` : window.location.pathname;
     window.history.replaceState(null, "", url);
-  }, [focus]);
+  }, [focus, tourAt]);
 
   const go = useCallback((f: Focus) => {
     setLinkType(null);
@@ -47,6 +60,33 @@ export default function GraphExplorer({ data }: { data: MapData }) {
       return { stack, at: stack.length - 1 };
     });
   }, []);
+  const startTour = () => {
+    setLinkType(null);
+    setHoverLink(null);
+    setHistory((h) => ({ stack: [...h.stack.slice(0, h.at + 1), HOME], at: h.at + 1 }));
+    setTourAt(0);
+  };
+  const exitTour = useCallback(() => setTourAt(null), []);
+  const nextStep = useCallback(
+    () => setTourAt((i) => (i === null ? i : i + 1 < steps.length ? i + 1 : null)),
+    [steps.length],
+  );
+  const prevStep = useCallback(() => setTourAt((i) => (i === null ? i : Math.max(0, i - 1))), []);
+
+  // Arrow keys move through the tour. Escape leaves it.
+  useEffect(() => {
+    if (tourAt === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t?.tagName === "INPUT" || t?.tagName === "TEXTAREA") return;
+      if (e.key === "ArrowRight") nextStep();
+      else if (e.key === "ArrowLeft") prevStep();
+      else if (e.key === "Escape") exitTour();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [tourAt, nextStep, prevStep, exitTour]);
+
   const back = () => {
     setLinkType(null);
     setHistory((h) => ({ ...h, at: Math.max(0, h.at - 1) }));
@@ -89,7 +129,20 @@ export default function GraphExplorer({ data }: { data: MapData }) {
   }
 
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} ${step ? styles.touring : ""}`}>
+      {step && tourAt !== null ? (
+        <aside className={styles.panel}>
+          <TourCard
+            step={step}
+            at={tourAt}
+            count={steps.length}
+            onBack={prevStep}
+            onNext={nextStep}
+            onExit={exitTour}
+            onJump={setTourAt}
+          />
+        </aside>
+      ) : (
       <aside className={styles.panel}>
         <nav className={styles.crumbs} aria-label="Breadcrumb">
           <button onClick={() => go(HOME)}>AI ecosystem</button>
@@ -111,8 +164,10 @@ export default function GraphExplorer({ data }: { data: MapData }) {
           />
         </div>
       </aside>
+      )}
 
       <section className={styles.stage}>
+        {!step && (
         <div className={styles.topbar}>
           <Search data={data} onPick={(id) => go({ kind: "company", id })} />
           <div className={styles.arrows}>
@@ -124,18 +179,35 @@ export default function GraphExplorer({ data }: { data: MapData }) {
             </button>
           </div>
         </div>
+        )}
 
         <RingGraph
           rings={rings}
           nodes={nodes}
-          links={links}
-          focus={focus}
-          lit={lit}
-          hoverLink={hoverLink}
-          onFocus={go}
+          links={step ? data.links : links}
+          focus={step ? HOME : focus}
+          lit={step ? step.lit : lit}
+          hoverLink={step ? null : hoverLink}
+          tour={step}
+          onFocus={(f) => {
+            // During the tour, a stray click on the background does nothing. A company opens it.
+            if (step && f.kind === "home") return;
+            if (step) setTourAt(null);
+            go(f);
+          }}
         />
 
-        <ViewSwitch current="graph" className={styles.switch} />
+        {!step && (
+          <>
+            <button className={styles.tourButton} onClick={startTour}>
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+                <path d="M3 1.5 L10.5 6 L3 10.5 Z" fill="currentColor" />
+              </svg>
+              Take the tour
+            </button>
+            <ViewSwitch current="graph" className={styles.switch} />
+          </>
+        )}
       </section>
     </div>
   );
@@ -255,6 +327,63 @@ function Search({ data, onPick }: { data: MapData; onPick: (id: string) => void 
           ))}
         </ul>
       )}
+    </div>
+  );
+}
+
+// The caption card for one tour step, with Back / Next / Exit.
+function TourCard({
+  step,
+  at,
+  count,
+  onBack,
+  onNext,
+  onExit,
+  onJump,
+}: {
+  step: TourStep;
+  at: number;
+  count: number;
+  onBack: () => void;
+  onNext: () => void;
+  onExit: () => void;
+  onJump: (i: number) => void;
+}) {
+  const last = at === count - 1;
+  return (
+    <div className={styles.tourCard} role="region" aria-label="Guided tour" aria-live="polite">
+      <div className={styles.tourHead}>
+        <span className={styles.kicker}>
+          Guided tour · {at + 1} of {count}
+        </span>
+        <button className={styles.tourExit} onClick={onExit} aria-label="Exit the tour">
+          ✕
+        </button>
+      </div>
+      <div key={step.id} className={styles.tourText}>
+        <h2>{step.title}</h2>
+        {step.body.map((p) => (
+          <p key={p}>{p}</p>
+        ))}
+      </div>
+      <div className={styles.tourNav}>
+        <div className={styles.tourDots}>
+          {Array.from({ length: count }, (_, i) => (
+            <button
+              key={i}
+              aria-label={`Go to step ${i + 1}`}
+              aria-current={i === at ? "step" : undefined}
+              onClick={() => onJump(i)}
+            />
+          ))}
+        </div>
+        <button onClick={onBack} disabled={at === 0}>
+          Back
+        </button>
+        <button className={styles.tourNext} onClick={onNext}>
+          {last ? "Finish" : "Next"}
+        </button>
+      </div>
     </div>
   );
 }

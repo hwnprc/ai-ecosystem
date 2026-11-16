@@ -20,6 +20,7 @@ import {
   type Ring,
 } from "@/lib/graphLayout";
 import type { Focus } from "./focus";
+import { FULL_VIEW, type TourStep } from "./tour";
 import styles from "./Graph.module.css";
 
 type Props = {
@@ -30,6 +31,7 @@ type Props = {
   lit: Set<string> | null; // company ids to keep bright; null = everything
   hoverLink: string | null; // one link to pick out, from hovering its row in the panel
   onFocus: (f: Focus) => void;
+  tour?: TourStep | null; // a guided tour step: what to light, label, and zoom to
 };
 
 // Show every name while the map is small. Past this, names appear on hover or when lit.
@@ -59,7 +61,7 @@ export function NodeMark({ shape, size, color, fill }: { shape: NodeShape; size:
   }
 }
 
-export default function RingGraph({ rings, nodes, links, focus, lit, hoverLink, onFocus }: Props) {
+export default function RingGraph({ rings, nodes, links, focus, lit, hoverLink, onFocus, tour = null }: Props) {
   const [hoverId, setHoverId] = useState<string | null>(null);
   const byId = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes]);
 
@@ -73,6 +75,33 @@ export default function RingGraph({ rings, nodes, links, focus, lit, hoverLink, 
     target.current = rotationToBottom(node.angle, target.current);
     rotation.set(target.current);
   }, [focus, byId, rotation]);
+  // The tour reads the graph upright, so turn the dial back to the nearest full turn.
+  const touring = tour !== null;
+  useEffect(() => {
+    if (!touring) return;
+    target.current = Math.round(target.current / 360) * 360;
+    rotation.set(target.current);
+  }, [touring, rotation]);
+
+  // Zoom by easing the viewBox toward the tour step's box.
+  const svgRef = useRef<SVGSVGElement>(null);
+  const view = tour?.view ?? FULL_VIEW;
+  const zoomSpring = { stiffness: 60, damping: 20 };
+  const vx = useSpring(FULL_VIEW.x, zoomSpring);
+  const vy = useSpring(FULL_VIEW.y, zoomSpring);
+  const vs = useSpring(FULL_VIEW.size, zoomSpring);
+  useEffect(() => {
+    vx.set(view.x);
+    vy.set(view.y);
+    vs.set(view.size);
+  }, [view.x, view.y, view.size, vx, vy, vs]);
+  const applyView = useCallback(() => {
+    const s = vs.get();
+    svgRef.current?.setAttribute("viewBox", `${vx.get()} ${vy.get()} ${s} ${s}`);
+  }, [vx, vy, vs]);
+  useMotionValueEvent(vx, "change", applyView);
+  useMotionValueEvent(vy, "change", applyView);
+  useMotionValueEvent(vs, "change", applyView);
   // Write the angle straight onto the SVG, so a turn does not re-render React every frame.
   const turnRef = useRef<SVGGElement>(null);
   const applyTurn = useCallback((r: number) => {
@@ -88,16 +117,19 @@ export default function RingGraph({ rings, nodes, links, focus, lit, hoverLink, 
 
   const selectedId = focus.kind === "company" ? focus.id : null;
   const activeLink = (l: Link) =>
-    selectedId ? l.from === selectedId || l.to === selectedId : lit ? lit.has(l.from) && lit.has(l.to) : false;
+    tour
+      ? (tour.links?.has(linkKey(l)) ?? false)
+      : selectedId ? l.from === selectedId || l.to === selectedId : lit ? lit.has(l.from) && lit.has(l.to) : false;
   // Draw order: faint links first, lit ones on top, the hovered one last.
   const rank = (l: Link) => (hoverLink === linkKey(l) ? 2 : activeLink(l) ? 1 : 0);
   const dim = (id: string) => lit !== null && !lit.has(id);
   const showAllLabels = nodes.filter((n) => n.tier !== "wide").length < LABEL_ALL_UNDER;
-  const agiOn = focus.kind === "agi";
+  const agiOn = focus.kind === "agi" || (tour?.agi ?? false);
   const colors = [HUB_COLOR, ...Object.values(LAYER_STYLE).map((s) => s.color)];
 
   return (
     <svg
+      ref={svgRef}
       className={styles.svg}
       viewBox={`${-VIEW / 2} ${-VIEW / 2} ${VIEW} ${VIEW}`}
       role="img"
@@ -123,7 +155,7 @@ export default function RingGraph({ rings, nodes, links, focus, lit, hoverLink, 
 
       {/* Rings, one per layer, each in its own color */}
       {rings.map((ring) => {
-        const on = focus.kind === "layer" && focus.id === ring.layer.id;
+        const on = tour ? tour.ring === ring.layer.id : focus.kind === "layer" && focus.id === ring.layer.id;
         return (
           <circle
             key={ring.layer.id}
@@ -161,7 +193,7 @@ export default function RingGraph({ rings, nodes, links, focus, lit, hoverLink, 
             if (!a || !b) return null;
             const hot = hoverLink === linkKey(l);
             const on = hot || activeLink(l);
-            const faded = !on && (selectedId !== null || lit !== null || hoverLink !== null);
+            const faded = !on && (tour !== null || selectedId !== null || lit !== null || hoverLink !== null);
             const color = LAYER_STYLE[a.layer].color;
             const [first, second] = edgeHalves(a, b);
             return (
@@ -186,8 +218,9 @@ export default function RingGraph({ rings, nodes, links, focus, lit, hoverLink, 
           const size = n.kind === "bigtech" ? 13 : wide ? 5 : 10.5;
           const fill = selected ? style.color : n.kind === "bigtech" ? `${style.color}38` : "var(--graph-node)";
           // Wide-tier names only show on hover or selection, or when few companies are lit.
-          const showLabel =
-            selected ||
+          const showLabel = tour?.labels
+            ? tour.labels.has(n.id) || hovered
+            : selected ||
             hovered ||
             (lit !== null ? lit.has(n.id) && (!wide || selectedId !== null || lit.size <= 12) : showAllLabels && !wide);
           return (

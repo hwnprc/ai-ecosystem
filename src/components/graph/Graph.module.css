@@ -534,6 +534,126 @@
 }
 
 
+/* ---------- Guided tour ---------- */
+
+.tourButton {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: #e07a3a;
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+
+.tourButton:hover {
+  background: #c9692c;
+}
+
+.tourCard {
+  background: var(--card);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tourHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tourExit {
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 0.95rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}
+
+.tourExit:hover {
+  background: var(--border);
+  color: var(--foreground);
+}
+
+.tourText {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: tourIn 0.35s ease-out;
+}
+
+.tourText h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+@keyframes tourIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.tourNav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tourNav > button {
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: 8px;
+  padding: 6px 16px;
+  font-size: 0.9rem;
+}
+
+.tourNav > button:disabled {
+  color: var(--muted);
+  cursor: default;
+}
+
+.tourNav > .tourNext {
+  background: var(--foreground);
+  border-color: var(--foreground);
+  color: var(--background);
+}
+
+.tourDots {
+  display: flex;
+  gap: 6px;
+  margin-right: auto;
+}
+
+.tourDots button {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  background: var(--border);
+}
+
+.tourDots button[aria-current="step"] {
+  background: #e07a3a;
+}
+
 /* Phone and narrow screens: graph on top, panel below. */
 @media (max-width: 800px) {
   .page {
@@ -554,6 +674,30 @@
 
   .panelCard {
     overflow: visible;
+  }
+
+  /* The tour caption floats over the bottom of the screen, under the graph. */
+  .touring .stage {
+    padding-bottom: 0;
+  }
+
+  .touring .panel {
+    position: sticky;
+    bottom: 8px;
+    z-index: 2;
+  }
+
+  .tourCard {
+    padding: 14px 16px;
+    gap: 10px;
+  }
+
+  .tourText h2 {
+    font-size: 1.2rem;
+  }
+
+  .tourText {
+    font-size: 0.92rem;
   }
 }
 
