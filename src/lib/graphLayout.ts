@@ -47,7 +47,7 @@ export function layoutGraph(layers: Layer[], companies: Company[]) {
 export function edgePath(a: { x: number; y: number }, b: { x: number; y: number }) {
   const mx = (a.x + b.x) / 2;
   const my = (a.y + b.y) / 2;
-  const pull = 0.45;
+  const pull = 0.7; // how far the curve bends toward the center (1 = straight)
   return `M${a.x},${a.y} Q${mx * pull},${my * pull} ${b.x},${b.y}`;
 }
 
@@ -66,7 +66,21 @@ export const LINK_LABELS: Record<Link["type"], { out: string; in: string }> = {
   "runs-on": { out: "Runs on", in: "Supplies compute to" },
   "builds-on": { out: "Builds on", in: "Its models are used by" },
   "buys-power": { out: "Buys power from", in: "Sells power to" },
+  partners: { out: "Partners with", in: "Partners with" },
+  acquires: { out: "Acquired or licensed", in: "Acquired or licensed by" },
 };
+
+// Short names for the filter chips.
+export const LINK_SHORT: Record<Link["type"], string> = {
+  invests: "Invests",
+  "runs-on": "Runs on",
+  "builds-on": "Builds on",
+  "buys-power": "Power",
+  partners: "Partners",
+  acquires: "Acquires",
+};
+
+export const linkKey = (l: Link) => `${l.from}|${l.type}|${l.to}`;
 
 // Dash pattern per link type, so the graph stays black and white.
 export const LINK_DASH: Record<Link["type"], string | undefined> = {
@@ -74,6 +88,8 @@ export const LINK_DASH: Record<Link["type"], string | undefined> = {
   "runs-on": "6 4",
   "builds-on": "2 4",
   "buys-power": "10 3 2 3",
+  partners: "1 3",
+  acquires: "12 4",
 };
 
 // Each ring is its own system, with its own color and node shape, like the civic graph.
@@ -89,7 +105,7 @@ export const HUB_COLOR = "#e07a3a";
 
 // Split a curved edge in half so an arrowhead can sit in the middle of it.
 export function edgeHalves(a: { x: number; y: number }, b: { x: number; y: number }) {
-  const pull = 0.45;
+  const pull = 0.7; // how far the curve bends toward the center (1 = straight)
   const c = { x: ((a.x + b.x) / 2) * pull, y: ((a.y + b.y) / 2) * pull };
   const q0 = { x: (a.x + c.x) / 2, y: (a.y + c.y) / 2 };
   const q1 = { x: (c.x + b.x) / 2, y: (c.y + b.y) / 2 };

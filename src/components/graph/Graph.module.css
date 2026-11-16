@@ -396,14 +396,18 @@
 
 .edge {
   fill: none;
-  stroke-width: 1.2;
-  opacity: 0.45;
+  stroke-width: 1;
+  opacity: 0.22;
   transition: opacity 0.3s, stroke-width 0.3s;
 }
 
 .edgeOn {
   opacity: 1;
   stroke-width: 1.8;
+}
+
+.edgeHot {
+  stroke-width: 3.5;
 }
 
 .edgeFaded {
@@ -495,4 +499,131 @@
 .center text.hubText {
   font-size: 22px;
   letter-spacing: 0.04em;
+}
+
+/* ---------- Connections list ---------- */
+
+.count {
+  color: var(--muted);
+  font-size: 0.8em;
+  margin-left: 2px;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.filters button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border);
+  background: none;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.8rem;
+}
+
+.filters button[aria-pressed="true"] {
+  border-color: var(--foreground);
+  background: var(--foreground);
+  color: var(--card);
+}
+
+.filters button[aria-pressed="true"] .count {
+  color: inherit;
+  opacity: 0.7;
+}
+
+.filters button[aria-pressed="true"] line {
+  stroke: var(--card);
+}
+
+.group {
+  margin-top: 6px;
+}
+
+.groupHead {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: none;
+  padding: 10px 0 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-align: left;
+}
+
+.groupHead:hover {
+  color: var(--foreground);
+}
+
+.caret {
+  margin-left: auto;
+}
+
+.linkRow {
+  padding: 2px 0 6px;
+  border-radius: 6px;
+}
+
+.linkRow:hover {
+  background: color-mix(in srgb, var(--foreground) 4%, transparent);
+}
+
+.linkTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.linkTop .row {
+  width: auto;
+  padding-bottom: 2px;
+}
+
+.date {
+  flex: none;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.linkRow .linkNote {
+  margin: 0 0 0 26px;
+}
+
+.linkNote a,
+.signalText a {
+  color: var(--muted);
+  text-underline-offset: 2px;
+  white-space: nowrap;
+}
+
+.check {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border: 1px solid #d9822b;
+  color: #b8661a;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  cursor: help;
+}
+
+.signalType {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding-top: 8px;
+}
+
+.signalText {
+  font-size: 0.9rem;
 }

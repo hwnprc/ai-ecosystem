@@ -12,6 +12,7 @@ import {
   edgeHalves,
   rotationToBottom,
   starburst,
+  linkKey,
   type NodeShape,
   type PlacedNode,
   type Ring,
@@ -25,6 +26,7 @@ type Props = {
   links: Link[];
   focus: Focus;
   lit: Set<string> | null; // company ids to keep bright; null = everything
+  hoverLink: string | null; // one link to pick out, from hovering its row in the panel
   onFocus: (f: Focus) => void;
 };
 
@@ -55,7 +57,7 @@ export function NodeMark({ shape, size, color, fill }: { shape: NodeShape; size:
   }
 }
 
-export default function RingGraph({ rings, nodes, links, focus, lit, onFocus }: Props) {
+export default function RingGraph({ rings, nodes, links, focus, lit, hoverLink, onFocus }: Props) {
   const [hoverId, setHoverId] = useState<string | null>(null);
   const byId = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes]);
 
@@ -85,6 +87,8 @@ export default function RingGraph({ rings, nodes, links, focus, lit, onFocus }: 
   const selectedId = focus.kind === "company" ? focus.id : null;
   const activeLink = (l: Link) =>
     selectedId ? l.from === selectedId || l.to === selectedId : lit ? lit.has(l.from) && lit.has(l.to) : false;
+  // Draw order: faint links first, lit ones on top, the hovered one last.
+  const rank = (l: Link) => (hoverLink === linkKey(l) ? 2 : activeLink(l) ? 1 : 0);
   const dim = (id: string) => lit !== null && !lit.has(id);
   const showAllLabels = nodes.length < LABEL_ALL_UNDER;
   const agiOn = focus.kind === "agi";
@@ -148,13 +152,14 @@ export default function RingGraph({ rings, nodes, links, focus, lit, onFocus }: 
 
         {/* Links: dim ones first, lit ones on top. Colored by the layer they start from. */}
         {[...links]
-          .sort((a, b) => Number(activeLink(a)) - Number(activeLink(b)))
+          .sort((a, b) => rank(a) - rank(b))
           .map((l) => {
             const a = byId.get(l.from);
             const b = byId.get(l.to);
             if (!a || !b) return null;
-            const on = activeLink(l);
-            const faded = !on && (selectedId !== null || lit !== null);
+            const hot = hoverLink === linkKey(l);
+            const on = hot || activeLink(l);
+            const faded = !on && (selectedId !== null || lit !== null || hoverLink !== null);
             const color = LAYER_STYLE[a.layer].color;
             const [first, second] = edgeHalves(a, b);
             return (
@@ -162,7 +167,7 @@ export default function RingGraph({ rings, nodes, links, focus, lit, onFocus }: 
                 key={`${l.from}-${l.type}-${l.to}`}
                 stroke={color}
                 strokeDasharray={LINK_DASH[l.type]}
-                className={`${styles.edge} ${on ? styles.edgeOn : ""} ${faded ? styles.edgeFaded : ""}`}
+                className={`${styles.edge} ${on ? styles.edgeOn : ""} ${hot ? styles.edgeHot : ""} ${faded ? styles.edgeFaded : ""}`}
               >
                 <path d={first} markerEnd={`url(#${markerId(color)})`} />
                 <path d={second} />

@@ -63,13 +63,18 @@ export type CareerRow = {
 // runs-on:    from trains or serves its AI on to's chips or cloud
 // builds-on:  from uses to's models inside its product
 // buys-power: from has agreed to buy electricity from to
-export type LinkType = "invests" | "runs-on" | "builds-on" | "buys-power";
+// partners:   a named strategic or customer deal that fits none of the above
+// acquires:   from bought, acqui-hired, or licensed the core tech or team of to
+export type LinkType = "invests" | "runs-on" | "builds-on" | "buys-power" | "partners" | "acquires";
 
 export type Link = {
   from: string; // Company.id
   to: string; // Company.id
   type: LinkType;
   note: string; // one short sentence on what the link is
-  source: string; // URL, empty until checked
-  verified: boolean;
+  source: string; // URL of the article or press release
+  date?: string; // YYYY-MM or YYYY-MM-DD of the event
+  confidence?: "high" | "medium" | "low"; // how clearly the source states it
+  check?: string; // why a person should double-check it
+  verified: boolean; // true once Haewon has read the source
 };

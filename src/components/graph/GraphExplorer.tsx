@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { MapData } from "@/lib/data";
+import type { LinkType } from "@/lib/types";
 import { layoutGraph } from "@/lib/graphLayout";
 import RingGraph from "./RingGraph";
 import GraphPanel from "./GraphPanel";
@@ -15,6 +16,13 @@ export default function GraphExplorer({ data }: { data: MapData }) {
   const { rings, nodes } = useMemo(() => layoutGraph(data.layers, data.companies), [data]);
   const [history, setHistory] = useState<History>({ stack: [HOME], at: 0 });
   const focus = history.stack[history.at];
+  const [linkType, setLinkType] = useState<LinkType | null>(null);
+  const [hoverLink, setHoverLink] = useState<string | null>(null);
+  // Only links of the chosen type count, on the graph and in the panel.
+  const links = useMemo(
+    () => (linkType ? data.links.filter((l) => l.type === linkType) : data.links),
+    [data.links, linkType],
+  );
 
   // Open the view named in the URL, if any.
   useEffect(() => {
@@ -31,14 +39,22 @@ export default function GraphExplorer({ data }: { data: MapData }) {
   }, [focus]);
 
   const go = useCallback((f: Focus) => {
+    setLinkType(null);
+    setHoverLink(null);
     setHistory((h) => {
       if (sameFocus(h.stack[h.at], f)) return h;
       const stack = [...h.stack.slice(0, h.at + 1), f];
       return { stack, at: stack.length - 1 };
     });
   }, []);
-  const back = () => setHistory((h) => ({ ...h, at: Math.max(0, h.at - 1) }));
-  const forward = () => setHistory((h) => ({ ...h, at: Math.min(h.stack.length - 1, h.at + 1) }));
+  const back = () => {
+    setLinkType(null);
+    setHistory((h) => ({ ...h, at: Math.max(0, h.at - 1) }));
+  };
+  const forward = () => {
+    setLinkType(null);
+    setHistory((h) => ({ ...h, at: Math.min(h.stack.length - 1, h.at + 1) }));
+  };
 
   // Which companies stay bright for the current view.
   const lit = useMemo<Set<string> | null>(() => {
@@ -53,14 +69,14 @@ export default function GraphExplorer({ data }: { data: MapData }) {
         return new Set(data.directions.find((d) => d.id === focus.id)?.companies ?? []);
       case "company": {
         const ids = new Set([focus.id]);
-        for (const l of data.links) {
+        for (const l of links) {
           if (l.from === focus.id) ids.add(l.to);
           if (l.to === focus.id) ids.add(l.from);
         }
         return ids;
       }
     }
-  }, [focus, data]);
+  }, [focus, data, links]);
 
   // Breadcrumb: AI ecosystem / layer / company
   const crumbs: { label: string; to: Focus }[] = [];
@@ -85,7 +101,14 @@ export default function GraphExplorer({ data }: { data: MapData }) {
           ))}
         </nav>
         <div className={styles.panelCard}>
-          <GraphPanel data={data} focus={focus} onFocus={go} />
+          <GraphPanel
+            data={data}
+            focus={focus}
+            onFocus={go}
+            linkType={linkType}
+            setLinkType={setLinkType}
+            setHoverLink={setHoverLink}
+          />
         </div>
       </aside>
 
@@ -102,7 +125,15 @@ export default function GraphExplorer({ data }: { data: MapData }) {
           </div>
         </div>
 
-        <RingGraph rings={rings} nodes={nodes} links={data.links} focus={focus} lit={lit} onFocus={go} />
+        <RingGraph
+          rings={rings}
+          nodes={nodes}
+          links={links}
+          focus={focus}
+          lit={lit}
+          hoverLink={hoverLink}
+          onFocus={go}
+        />
 
         <div className={styles.switch}>
           <span className={styles.switchOn}>Graph</span>
