@@ -754,3 +754,8 @@
   color: var(--muted);
   font-size: 0.8rem;
 }
+
+.sourceLink {
+  color: var(--muted);
+  font-size: 0.8rem;
+}

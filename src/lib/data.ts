@@ -5,7 +5,8 @@ import directions from "@/data/directions.json";
 import careers from "@/data/careers.json";
 import links from "@/data/links.json";
 import funded from "@/data/funded.json";
-import type { CareerRow, Company, Direction, FundedRow, Layer, Link, Signal } from "./types";
+import headings from "@/data/headings.json";
+import type { CareerRow, Company, Direction, FundedRow, Heading, Layer, Link, Signal } from "./types";
 
 export type MapData = {
   layers: Layer[];
@@ -29,6 +30,7 @@ export const mapData: MapData = {
 // or is valued at $1B+. Its rows also add funding facts to the hand-picked companies.
 const rows = funded as FundedRow[];
 const factsById = new Map(rows.map((r) => [r.id, r.facts]));
+const headingById = new Map((headings as Heading[]).map((h) => [h.id, h]));
 const deepIds = new Set(mapData.companies.map((c) => c.id));
 const wide: Company[] = rows
   .filter((r) => !deepIds.has(r.id) && r.name && r.layer && r.problem)
@@ -42,12 +44,18 @@ const wide: Company[] = rows
     verified: false,
     tier: "wide",
     facts: r.facts,
+    heading: headingById.get(r.id),
   }));
 
 export const graphData: MapData = {
   ...mapData,
   companies: [
-    ...mapData.companies.map((c) => ({ ...c, tier: "deep" as const, facts: factsById.get(c.id) ?? [] })),
+    ...mapData.companies.map((c) => ({
+      ...c,
+      tier: "deep" as const,
+      facts: factsById.get(c.id) ?? [],
+      heading: headingById.get(c.id),
+    })),
     ...wide,
   ],
 };

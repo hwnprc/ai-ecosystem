@@ -189,7 +189,7 @@ export default function RingGraph({ rings, nodes, links, focus, lit, hoverLink, 
           const showLabel =
             selected ||
             hovered ||
-            (lit !== null ? lit.has(n.id) && (!wide || lit.size <= 12) : showAllLabels && !wide);
+            (lit !== null ? lit.has(n.id) && (!wide || selectedId !== null || lit.size <= 12) : showAllLabels && !wide);
           return (
             <g
               key={n.id}

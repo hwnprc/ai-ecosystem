@@ -30,7 +30,7 @@ function kindLabel(c: Company) {
 }
 
 // The same mark the graph uses: shape and color from the layer, fill from big tech vs startup.
-// Small = the wide tier, on the map for its funding, links not researched yet.
+// Small = the wide tier, added for its funding, with lighter link research.
 export function Mark({ layer, kind, small }: { layer: Company["layer"]; kind: Company["kind"]; small?: boolean }) {
   const st = LAYER_STYLE[layer];
   const size = kind === "bigtech" ? 6.5 : small ? 4 : 5.5;
@@ -86,7 +86,7 @@ export default function GraphPanel(props: Props) {
             <dd>{layer.heading.label}</dd>
           </dl>
           <p className={styles.muted}>{layer.note}</p>
-          <h3>Researched, with links ({members.length})</h3>
+          <h3>Researched in depth ({members.length})</h3>
           <ul className={styles.list}>
             {members.map((c) => (
               <CompanyRow key={c.id} c={c} sub={kindLabel(c)} onFocus={onFocus} />
@@ -241,7 +241,7 @@ export default function GraphPanel(props: Props) {
           <Mark layer="models" kind="startup" /> Startup: white
         </li>
         <li>
-          <Mark layer="models" kind="startup" small /> Small: on the map for its funding, links not researched yet
+          <Mark layer="models" kind="startup" small /> Small: added for its funding, links researched more lightly
         </li>
         {(Object.keys(LINK_LABELS) as Link["type"][]).map((t) => (
           <li key={t}>
@@ -253,7 +253,7 @@ export default function GraphPanel(props: Props) {
         ))}
       </ul>
       <p className={styles.note}>
-        {data.companies.length} companies. {deepCount} are researched, with {data.links.length} links. {sourced} links
+        {data.companies.length} companies, {deepCount} researched in depth. {data.links.length} links. {sourced} links
         have a source. {toCheck} are marked &quot;to check&quot;. Funding facts come from TechCrunch&apos;s $100M+
         lists, Dealroom&apos;s AI unicorn list, and European funding roundups.
       </p>
@@ -388,13 +388,25 @@ function CompanyView({ c, data, onFocus, linkType, setLinkType, setHoverLink }: 
       <h2>{c.name}</h2>
       <h3>Problem it works on</h3>
       <p>{c.problem}</p>
-      {signals[0] && (
+      {c.heading ? (
         <>
-          <h3>Latest move</h3>
+          <h3>Where it&apos;s heading</h3>
           <p>
-            {signals[0].summary} <time className={styles.date}>{signals[0].date.slice(0, 7)}</time>
+            {c.heading.text} <time className={styles.date}>{c.heading.date}</time>{" "}
+            <a className={styles.sourceLink} href={c.heading.source} target="_blank" rel="noopener noreferrer">
+              {siteOf(c.heading.source)} ↗
+            </a>
           </p>
         </>
+      ) : (
+        signals[0] && (
+          <>
+            <h3>Latest move</h3>
+            <p>
+              {signals[0].summary} <time className={styles.date}>{signals[0].date.slice(0, 7)}</time>
+            </p>
+          </>
+        )
       )}
       {c.facts && c.facts.length > 0 && (
         <>
@@ -427,7 +439,7 @@ function CompanyView({ c, data, onFocus, linkType, setLinkType, setHoverLink }: 
           {mine.length === 0 && (
             <p className={styles.note}>
               {c.tier === "wide"
-                ? "This company is on the map for its funding. Its links are not researched yet."
+                ? "No sourced links found yet for this company."
                 : "No links logged yet."}
             </p>
           )}

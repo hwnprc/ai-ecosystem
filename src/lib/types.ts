@@ -36,7 +36,11 @@ export type Company = {
   // or is valued at $1B+, with no links researched yet.
   tier?: "deep" | "wide";
   facts?: Fact[]; // why it qualifies: funding rounds and valuations
+  heading?: Heading; // where it is heading, from its latest concrete move
 };
+
+// One short sentence on where a company is heading, resting on one sourced move.
+export type Heading = { id: string; text: string; date: string; source: string };
 
 // One funding or valuation fact, e.g. "Raised $250M Series C (Oct 2025)".
 export type Fact = { text: string; source: string };
