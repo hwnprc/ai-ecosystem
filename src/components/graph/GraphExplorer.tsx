@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { MapData } from "@/lib/data";
 import type { LinkType } from "@/lib/types";
 import { layoutGraph } from "@/lib/graphLayout";
 import RingGraph from "./RingGraph";
-import GraphPanel from "./GraphPanel";
+import GraphPanel, { Mark } from "./GraphPanel";
 import { HOME, focusToParam, paramToFocus, sameFocus, type Focus } from "./focus";
 import styles from "./Graph.module.css";
 
@@ -144,47 +144,115 @@ export default function GraphExplorer({ data }: { data: MapData }) {
   );
 }
 
+// Search every company by name, problem, or layer. Arrow keys move, Enter opens, "/" focuses.
 function Search({ data, onPick }: { data: MapData; onPick: (id: string) => void }) {
-  const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
-  const hits = q.trim()
-    ? data.companies.filter((c) => c.name.toLowerCase().includes(q.trim().toLowerCase())).slice(0, 8)
-    : [];
+  const [open, setOpen] = useState(false);
+  const [at, setAt] = useState(0);
+  const input = useRef<HTMLInputElement>(null);
+  const layerName = useMemo(
+    () => new Map(data.layers.map((l) => [l.id, l.name.replace(/ \(.*\)$/, "")])),
+    [data.layers],
+  );
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (e.key === "/" && t?.tagName !== "INPUT" && t?.tagName !== "TEXTAREA") {
+        e.preventDefault();
+        input.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const hits = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    if (!term) return [];
+    const score = (c: MapData["companies"][number]) => {
+      const name = c.name.toLowerCase();
+      if (name.startsWith(term)) return 0;
+      if (name.split(/[\s(]+/).some((w) => w.startsWith(term))) return 1;
+      if (name.includes(term)) return 2;
+      if (c.problem.toLowerCase().includes(term) || (c.tag ?? "").toLowerCase().includes(term)) return 3;
+      if ((layerName.get(c.layer) ?? "").toLowerCase().includes(term)) return 4;
+      return 9;
+    };
+    return data.companies
+      .map((c) => ({ c, s: score(c) }))
+      .filter((h) => h.s < 9)
+      .sort((a, b) => a.s - b.s || a.c.name.localeCompare(b.c.name))
+      .slice(0, 12)
+      .map((h) => h.c);
+  }, [q, data.companies, layerName]);
+
   const pick = (id: string) => {
     onPick(id);
     setQ("");
     setOpen(false);
+    input.current?.blur();
   };
 
-  if (!open) {
-    return (
-      <button className={styles.searchBtn} onClick={() => setOpen(true)} aria-label="Search companies">
+  return (
+    <div className={styles.search}>
+      <label className={styles.searchBox}>
         <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
           <circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" strokeWidth="1.5" />
           <line x1="11" y1="11" x2="15" y2="15" stroke="currentColor" strokeWidth="1.5" />
         </svg>
-      </button>
-    );
-  }
-  return (
-    <div className={styles.search}>
-      <input
-        autoFocus
-        value={q}
-        placeholder="Search companies"
-        onChange={(e) => setQ(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && hits[0]) pick(hits[0].id);
-          if (e.key === "Escape") setOpen(false);
-        }}
-        onBlur={() => setTimeout(() => setOpen(false), 150)}
-      />
-      {hits.length > 0 && (
-        <ul>
-          {hits.map((c) => (
+        <input
+          ref={input}
+          value={q}
+          placeholder={`Search ${data.companies.length} companies`}
+          aria-label="Search companies"
+          role="combobox"
+          aria-expanded={open && q.trim() !== ""}
+          aria-controls="company-results"
+          onChange={(e) => {
+            setQ(e.target.value);
+            setAt(0);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowDown") {
+              e.preventDefault();
+              setAt((i) => Math.min(hits.length - 1, i + 1));
+            } else if (e.key === "ArrowUp") {
+              e.preventDefault();
+              setAt((i) => Math.max(0, i - 1));
+            } else if (e.key === "Enter" && hits[at]) {
+              pick(hits[at].id);
+            } else if (e.key === "Escape") {
+              setQ("");
+              setOpen(false);
+              input.current?.blur();
+            }
+          }}
+          onBlur={() => setTimeout(() => setOpen(false), 150)}
+        />
+        {!q && <kbd aria-hidden="true">/</kbd>}
+      </label>
+      {open && q.trim() !== "" && (
+        <ul className={styles.searchResults} id="company-results" role="listbox">
+          {hits.length === 0 && <li className={styles.searchEmpty}>No company matches &ldquo;{q.trim()}&rdquo;.</li>}
+          {hits.map((c, i) => (
             <li key={c.id}>
-              <button onMouseDown={(e) => e.preventDefault()} onClick={() => pick(c.id)}>
-                {c.name}
+              <button
+                role="option"
+                aria-selected={i === at}
+                onMouseEnter={() => setAt(i)}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => pick(c.id)}
+              >
+                <Mark layer={c.layer} kind={c.kind} small={c.tier === "wide"} />
+                <span>
+                  <span className={styles.searchName}>{c.name}</span>
+                  <span className={styles.searchSub}>
+                    {layerName.get(c.layer)} · {c.problem}
+                  </span>
+                </span>
               </button>
             </li>
           ))}

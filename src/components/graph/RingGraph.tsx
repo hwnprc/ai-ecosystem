@@ -90,7 +90,7 @@ export default function RingGraph({ rings, nodes, links, focus, lit, hoverLink, 
   // Draw order: faint links first, lit ones on top, the hovered one last.
   const rank = (l: Link) => (hoverLink === linkKey(l) ? 2 : activeLink(l) ? 1 : 0);
   const dim = (id: string) => lit !== null && !lit.has(id);
-  const showAllLabels = nodes.length < LABEL_ALL_UNDER;
+  const showAllLabels = nodes.filter((n) => n.tier !== "wide").length < LABEL_ALL_UNDER;
   const agiOn = focus.kind === "agi";
   const colors = [HUB_COLOR, ...Object.values(LAYER_STYLE).map((s) => s.color)];
 
@@ -133,9 +133,9 @@ export default function RingGraph({ rings, nodes, links, focus, lit, hoverLink, 
       })}
 
       <g ref={turnRef}>
-        {/* The model labs head straight for AGI: arrows from their ring in to the hub. */}
+        {/* The researched model labs head straight for AGI: arrows from their ring in to the hub. */}
         {nodes
-          .filter((n) => n.layer === "models")
+          .filter((n) => n.layer === "models" && (n.tier !== "wide" || n.id === selectedId))
           .map((n) => {
             const len = Math.hypot(n.x, n.y);
             const sx = (n.x / len) * (CENTER_R + 6);
@@ -180,18 +180,22 @@ export default function RingGraph({ rings, nodes, links, focus, lit, hoverLink, 
           const selected = n.id === selectedId;
           const hovered = hoverId === n.id;
           const style = LAYER_STYLE[n.layer];
-          const size = n.kind === "bigtech" ? 13 : n.stage === "early" ? 8 : 10.5;
+          const wide = n.tier === "wide";
+          const size = n.kind === "bigtech" ? 13 : wide ? 5 : 10.5;
           const fill = selected ? style.color : n.kind === "bigtech" ? `${style.color}38` : "var(--graph-node)";
+          // Wide-tier names only show on hover or selection, or when few companies are lit.
           const showLabel =
-            selected || hovered || (lit !== null ? lit.has(n.id) : showAllLabels);
+            selected ||
+            hovered ||
+            (lit !== null ? lit.has(n.id) && (!wide || lit.size <= 12) : showAllLabels && !wide);
           return (
             <g
               key={n.id}
               transform={`translate(${n.x},${n.y})`}
-              className={`${styles.node} ${dim(n.id) ? styles.nodeDim : ""} ${selected ? styles.nodeSelected : ""}`}
+              className={`${styles.node} ${wide ? styles.wide : ""} ${dim(n.id) ? styles.nodeDim : ""} ${selected ? styles.nodeSelected : ""}`}
               role="button"
               tabIndex={0}
-              aria-label={`${n.name}, ${n.kind === "bigtech" ? "big tech" : n.stage === "early" ? "early-stage startup" : "startup"}`}
+              aria-label={`${n.name}, ${n.kind === "bigtech" ? "big tech" : "startup"}`}
               onClick={(e) => {
                 e.stopPropagation();
                 onFocus({ kind: "company", id: n.id });
@@ -206,7 +210,7 @@ export default function RingGraph({ rings, nodes, links, focus, lit, hoverLink, 
               onMouseLeave={() => setHoverId(null)}
             >
               <g data-upright="">
-                <circle r={20} className={styles.hit} />
+                <circle r={wide ? 9 : 20} className={styles.hit} />
                 <NodeMark shape={style.shape} size={size} color={style.color} fill={fill} />
                 {showLabel && (
                   <text

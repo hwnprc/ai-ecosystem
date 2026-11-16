@@ -3,7 +3,7 @@
     "id": "agents",
     "title": "AI agents doing real work for businesses",
     "status": "guess",
-    "companies": ["openai", "anthropic", "langchain", "browserbase", "decagon", "cursor", "microsoft-copilot"],
+    "companies": ["openai", "anthropic", "langchain", "decagon", "cursor", "microsoft-copilot"],
     "summary": "Models are moving from answering questions to finishing tasks. This touches models, tools, and applications at once."
   },
   {

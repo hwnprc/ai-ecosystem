@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import GraphExplorer from "@/components/graph/GraphExplorer";
-import { mapData } from "@/lib/data";
+import { graphData } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "AI Ecosystem Graph",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function GraphPage() {
-  return <GraphExplorer data={mapData} />;
+  return <GraphExplorer data={graphData} />;
 }

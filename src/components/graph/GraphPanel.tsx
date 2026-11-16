@@ -26,14 +26,14 @@ const SIGNAL_LABELS: Record<SignalType, string> = {
 };
 
 function kindLabel(c: Company) {
-  if (c.kind === "bigtech") return "Big tech";
-  return c.stage === "early" ? "Early-stage startup" : "Startup";
+  return c.kind === "bigtech" ? "Big tech" : "Startup";
 }
 
 // The same mark the graph uses: shape and color from the layer, fill from big tech vs startup.
-function Mark({ layer, kind, early }: { layer: Company["layer"]; kind: Company["kind"]; early?: boolean }) {
+// Small = the wide tier, on the map for its funding, links not researched yet.
+export function Mark({ layer, kind, small }: { layer: Company["layer"]; kind: Company["kind"]; small?: boolean }) {
   const st = LAYER_STYLE[layer];
-  const size = kind === "bigtech" ? 6.5 : early ? 4.5 : 5.5;
+  const size = kind === "bigtech" ? 6.5 : small ? 4 : 5.5;
   return (
     <svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true" className={styles.markIcon}>
       <NodeMark shape={st.shape} size={size} color={st.color} fill={kind === "bigtech" ? `${st.color}38` : "var(--graph-node)"} />
@@ -42,7 +42,7 @@ function Mark({ layer, kind, early }: { layer: Company["layer"]; kind: Company["
 }
 
 function Shape({ c }: { c: Company }) {
-  return <Mark layer={c.layer} kind={c.kind} early={c.stage === "early"} />;
+  return <Mark layer={c.layer} kind={c.kind} small={c.tier === "wide"} />;
 }
 
 function CompanyRow({ c, sub, onFocus }: { c: Company; sub?: string; onFocus: (f: Focus) => void }) {
@@ -72,7 +72,8 @@ export default function GraphPanel(props: Props) {
   if (focus.kind === "layer") {
     const layer = layerOf(focus.id);
     if (layer) {
-      const members = data.companies.filter((c) => c.layer === layer.id);
+      const members = data.companies.filter((c) => c.layer === layer.id && c.tier !== "wide");
+      const more = data.companies.filter((c) => c.layer === layer.id && c.tier === "wide");
       return (
         <div className={styles.panelBody}>
           <p className={styles.kicker}>Layer {RING_ORDER.indexOf(layer.id) + 1} of 5, counting out from AGI</p>
@@ -85,12 +86,22 @@ export default function GraphPanel(props: Props) {
             <dd>{layer.heading.label}</dd>
           </dl>
           <p className={styles.muted}>{layer.note}</p>
-          <h3>Companies ({members.length})</h3>
+          <h3>Researched, with links ({members.length})</h3>
           <ul className={styles.list}>
             {members.map((c) => (
               <CompanyRow key={c.id} c={c} sub={kindLabel(c)} onFocus={onFocus} />
             ))}
           </ul>
+          {more.length > 0 && (
+            <>
+              <h3>Also raised $100M+ or valued $1B+ ({more.length})</h3>
+              <ul className={styles.list}>
+                {more.map((c) => (
+                  <CompanyRow key={c.id} c={c} sub={c.facts?.[0]?.text} onFocus={onFocus} />
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       );
     }
@@ -125,7 +136,8 @@ export default function GraphPanel(props: Props) {
   }
 
   if (focus.kind === "agi") {
-    const labs = data.companies.filter((c) => c.layer === "models");
+    const labs = data.companies.filter((c) => c.layer === "models" && c.tier !== "wide");
+    const moreLabs = data.companies.filter((c) => c.layer === "models" && c.tier === "wide");
     return (
       <div className={styles.panelBody}>
         <p className={styles.kicker}>The center</p>
@@ -141,6 +153,12 @@ export default function GraphPanel(props: Props) {
             <CompanyRow key={c.id} c={c} sub={kindLabel(c)} onFocus={onFocus} />
           ))}
         </ul>
+        <h3>More model labs on the map ({moreLabs.length})</h3>
+        <ul className={styles.list}>
+          {moreLabs.map((c) => (
+            <CompanyRow key={c.id} c={c} sub={c.facts?.[0]?.text} onFocus={onFocus} />
+          ))}
+        </ul>
       </div>
     );
   }
@@ -148,6 +166,7 @@ export default function GraphPanel(props: Props) {
   // Home: what this is, the directions to explore, and how to read the picture.
   const sourced = data.links.filter((l) => l.source).length;
   const toCheck = data.links.filter((l) => l.confidence && l.confidence !== "high").length;
+  const deepCount = data.companies.filter((c) => c.tier !== "wide").length;
   return (
     <div className={styles.panelBody}>
       <p className={styles.kicker}>A map of {data.companies.length} AI companies</p>
@@ -158,6 +177,10 @@ export default function GraphPanel(props: Props) {
       <p className={styles.muted}>
         AGI sits in the middle as the place many of them say they are going. Each ring is one layer of the
         stack. Arrows show who funds, powers, and builds on whom.
+      </p>
+      <p className={styles.muted}>
+        Every company here raised $100M or more, or is valued at $1B or more. Big tech counts too. Use the
+        search bar to find any of them.
       </p>
 
       <h3>What the map shows so far</h3>
@@ -218,7 +241,7 @@ export default function GraphPanel(props: Props) {
           <Mark layer="models" kind="startup" /> Startup: white
         </li>
         <li>
-          <Mark layer="models" kind="startup" early /> Early-stage startup: small
+          <Mark layer="models" kind="startup" small /> Small: on the map for its funding, links not researched yet
         </li>
         {(Object.keys(LINK_LABELS) as Link["type"][]).map((t) => (
           <li key={t}>
@@ -230,8 +253,9 @@ export default function GraphPanel(props: Props) {
         ))}
       </ul>
       <p className={styles.note}>
-        {data.companies.length} companies and {data.links.length} links. {sourced} links have a source. {toCheck}{" "}
-        are marked &quot;to check&quot;.
+        {data.companies.length} companies. {deepCount} are researched, with {data.links.length} links. {sourced} links
+        have a source. {toCheck} are marked &quot;to check&quot;. Funding facts come from TechCrunch&apos;s $100M+
+        lists, Dealroom&apos;s AI unicorn list, and European funding roundups.
       </p>
     </div>
   );
@@ -256,6 +280,32 @@ function findings(data: MapData): { text: string; cta?: string; focus?: Focus }[
   const pct = (a: number, b: number) => (b ? Math.round((100 * a) / b) : 0);
 
   const out: { text: string; cta?: string; focus?: Focus }[] = [];
+  // Private AI companies valued at $100B or more ("hectocorns").
+  const valued = (c: Company) => {
+    for (const f of c.facts ?? []) {
+      const m = f.text.match(/^Valued at \$([\d.]+)([BT])/);
+      if (m) return Number(m[1]) * (m[2] === "T" ? 1000 : 1);
+    }
+    return 0;
+  };
+  const hecto = data.companies.filter((c) => valued(c) >= 100).sort((a, b) => valued(b) - valued(a));
+  if (hecto.length) {
+    const names = hecto.map((c) => c.name);
+    const list = names.length > 1 ? `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}` : names[0];
+    out.push({
+      text: `${hecto.length} private AI companies are valued at $100B or more: ${list}.`,
+      cta: `See ${hecto[0].name}`,
+      focus: { kind: "company", id: hecto[0].id },
+    });
+  }
+  const wide = data.companies.filter((c) => c.tier === "wide");
+  if (wide.length) {
+    const labs = wide.filter((c) => c.layer === "models").length;
+    const appsN = wide.filter((c) => c.layer === "applications").length;
+    out.push({
+      text: `Beyond the researched core, ${wide.length} more companies cleared the bar. ${appsN} build applications and ${labs} are model labs.`,
+    });
+  }
   if (top[0]) {
     out.push({
       text: `${top[0].c.name} is the most connected company, with ${top[0].n} links. ${top[1]?.c.name} and ${top[2]?.c.name} come next.`,
@@ -346,6 +396,21 @@ function CompanyView({ c, data, onFocus, linkType, setLinkType, setHoverLink }: 
           </p>
         </>
       )}
+      {c.facts && c.facts.length > 0 && (
+        <>
+          <h3>Why it&apos;s on the map</h3>
+          <ul className={styles.facts}>
+            {c.facts.map((f) => (
+              <li key={f.text}>
+                {f.text}{" "}
+                <a href={f.source} target="_blank" rel="noopener noreferrer">
+                  {siteOf(f.source)} ↗
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
       {!c.verified && <p className={styles.note}>Facts come from news sources and are not yet checked by hand.</p>}
 
       <div className={styles.tabs} role="tablist">
@@ -359,7 +424,13 @@ function CompanyView({ c, data, onFocus, linkType, setLinkType, setHoverLink }: 
 
       {tab === "connected" ? (
         <>
-          {mine.length === 0 && <p className={styles.note}>No links logged yet.</p>}
+          {mine.length === 0 && (
+            <p className={styles.note}>
+              {c.tier === "wide"
+                ? "This company is on the map for its funding. Its links are not researched yet."
+                : "No links logged yet."}
+            </p>
+          )}
           {mine.length > 0 && (
             <div className={styles.filters} role="group" aria-label="Filter by link type">
               <button aria-pressed={linkType === null} onClick={() => setLinkType(null)}>

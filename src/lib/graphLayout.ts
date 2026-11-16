@@ -21,6 +21,8 @@ export function ringRadius(index: number) {
 
 // Spread each layer's companies evenly around its ring. Each ring starts at a
 // slightly different angle so nodes on neighbouring rings do not line up.
+// Researched companies sit on the ring. The wide tier sits on a band just inside it.
+export const WIDE_INSET = 24;
 export function layoutGraph(layers: Layer[], companies: Company[]) {
   const rings: Ring[] = RING_ORDER.map((id, i) => ({
     layer: layers.find((l) => l.id === id)!,
@@ -28,17 +30,25 @@ export function layoutGraph(layers: Layer[], companies: Company[]) {
   })).filter((ring) => ring.layer);
 
   const nodes: PlacedNode[] = [];
-  rings.forEach((ring, i) => {
-    const members = companies.filter((c) => c.layer === ring.layer.id);
+  const place = (members: Company[], r: number, offset: number) => {
     const scale = scalePoint<string>()
       .domain(members.map((c) => c.id))
       .range([0, 360 - 360 / Math.max(members.length, 1)]);
-    const offset = -90 + i * 23; // degrees, start near the top
     members.forEach((c) => {
       const angle = (scale(c.id) ?? 0) + offset;
       const rad = (angle * Math.PI) / 180;
-      nodes.push({ ...c, angle, r: ring.r, x: ring.r * Math.cos(rad), y: ring.r * Math.sin(rad) });
+      nodes.push({ ...c, angle, r, x: r * Math.cos(rad), y: r * Math.sin(rad) });
     });
+  };
+  rings.forEach((ring, i) => {
+    const members = companies.filter((c) => c.layer === ring.layer.id);
+    const offset = -90 + i * 23; // degrees, start near the top
+    place(members.filter((c) => c.tier !== "wide"), ring.r, offset);
+    place(
+      members.filter((c) => c.tier === "wide").sort((a, b) => a.name.localeCompare(b.name)),
+      ring.r - WIDE_INSET,
+      offset + 4,
+    );
   });
   return { rings, nodes };
 }

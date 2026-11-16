@@ -276,7 +276,6 @@
   pointer-events: auto;
 }
 
-.searchBtn,
 .arrows button {
   border: 1px solid var(--border);
   background: var(--card);
@@ -300,43 +299,103 @@
   cursor: default;
 }
 
+/* Always-visible search over every company on the map */
 .search {
   position: relative;
-  width: min(280px, 60vw);
+  width: min(360px, 70vw);
 }
 
-.search input {
-  width: 100%;
-  font: inherit;
-  color: inherit;
-  background: var(--card);
-  border: 1px solid var(--foreground);
-  border-radius: 8px;
-  padding: 6px 10px;
-}
-
-.search ul {
-  list-style: none;
-  position: absolute;
-  top: 40px;
-  left: 0;
-  right: 0;
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
+  border-radius: 10px;
+  padding: 0 10px;
+  height: 40px;
+  box-shadow: var(--shadow);
 }
 
-.search li button {
+.searchBox:focus-within {
+  border-color: var(--foreground);
+}
+
+.searchBox svg {
+  flex: none;
+  color: var(--muted);
+}
+
+.searchBox input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  outline: none;
+}
+
+.searchBox kbd {
+  font: inherit;
+  font-size: 0.75rem;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0 5px;
+}
+
+.searchResults {
+  list-style: none;
+  position: absolute;
+  top: 46px;
+  left: 0;
+  right: 0;
+  max-height: min(420px, 60vh);
+  overflow-y: auto;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 4px;
+}
+
+.searchResults li button {
   width: 100%;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
   text-align: left;
   border: 0;
   background: none;
-  padding: 6px 10px;
+  border-radius: 6px;
+  padding: 7px 8px;
 }
 
-.search li button:hover {
+.searchResults li button[aria-selected="true"] {
   background: var(--border);
+}
+
+.searchResults li svg {
+  margin-top: 2px;
+}
+
+.searchName {
+  display: block;
+  font-weight: 500;
+}
+
+.searchSub {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.searchEmpty {
+  padding: 8px 10px;
+  color: var(--muted);
+  font-size: 0.85rem;
 }
 
 .switch {
@@ -452,6 +511,10 @@
 
 .nodeSelected .mark {
   stroke-width: 2.6;
+}
+
+.wide .mark {
+  stroke-width: 1.2;
 }
 
 .label {
@@ -667,4 +730,20 @@
 
 .inlineLink:hover {
   color: var(--foreground);
+}
+
+.facts {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+}
+
+.facts li {
+  padding: 3px 0;
+}
+
+.facts a {
+  color: var(--muted);
+  font-size: 0.8rem;
 }

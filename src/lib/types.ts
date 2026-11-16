@@ -32,7 +32,17 @@ export type Company = {
   tag?: string; // a sub-area inside the layer, e.g. "Physical AI" or "Dev tools"
   problem: string; // the problem it is solving, in one sentence
   verified: boolean; // false until the problem and stage are checked against sources
+  // deep = hand-picked, with researched links. wide = on the map because it raised $100M+
+  // or is valued at $1B+, with no links researched yet.
+  tier?: "deep" | "wide";
+  facts?: Fact[]; // why it qualifies: funding rounds and valuations
 };
+
+// One funding or valuation fact, e.g. "Raised $250M Series C (Oct 2025)".
+export type Fact = { text: string; source: string };
+
+// One row of src/data/funded.json. Rows for companies already in companies.json carry only facts.
+export type FundedRow = { id: string; facts: Fact[]; name?: string; layer?: LayerId; problem?: string };
 
 export type SignalType = "money" | "hiring" | "launch" | "language";
 
