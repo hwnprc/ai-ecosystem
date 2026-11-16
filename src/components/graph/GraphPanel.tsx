@@ -6,7 +6,14 @@ import type { Company, Link, LinkType, SignalType } from "@/lib/types";
 import { LAYER_STYLE, LINK_DASH, LINK_LABELS, LINK_SHORT, RING_ORDER, linkKey } from "@/lib/graphLayout";
 import { NodeMark } from "./RingGraph";
 import type { Focus } from "./focus";
+import meta from "@/data/meta.json";
 import styles from "./Graph.module.css";
+
+// "2026-11-16" -> "Nov 16, 2026", the date the data was last refreshed.
+function formatDay(day: string) {
+  const d = new Date(`${day}T00:00:00Z`);
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+}
 
 type ViewProps = {
   data: MapData;
@@ -169,7 +176,9 @@ export default function GraphPanel(props: Props) {
   const deepCount = data.companies.filter((c) => c.tier !== "wide").length;
   return (
     <div className={styles.panelBody}>
-      <p className={styles.kicker}>A map of {data.companies.length} AI companies</p>
+      <p className={styles.kicker}>
+        A map of {data.companies.length} AI companies · Updated {formatDay(meta.updated)}
+      </p>
       <h2>Where is AI heading?</h2>
       <p>
         What problems are big tech companies and AI startups each solving today, and where are they all heading?
