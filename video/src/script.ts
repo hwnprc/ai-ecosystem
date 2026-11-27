@@ -5,9 +5,19 @@
 export const FPS = 30;
 
 export const script = {
-  // 1. Open close on AGI in the middle.
+  // 0. The hook: the whole map, from the very first frame, to grab attention.
+  // At `end` the camera dives into AGI, taking `dive` seconds.
+  // {companies} and {links} are filled in from the data.
+  hook: {
+    end: 1.8,
+    dive: 0.7,
+    title: "I mapped the US AI ecosystem.",
+    sub: "{companies} companies. {links} connections.",
+  },
+
+  // 1. Close on AGI in the middle.
   intro: {
-    start: 0,
+    start: 2.5,
     title: "Where is AI heading?",
     sub: "Every ring of this map points to the middle.",
   },
@@ -16,7 +26,7 @@ export const script = {
   // The caption under each ring name comes from its definition in src/data/layers.json.
   // Set a ring's text here to override it.
   rings: {
-    start: 2.6,
+    start: 4.4,
     perRing: 1.9,
     names: {
       models: "Models",
@@ -30,15 +40,15 @@ export const script = {
 
   // 3. Show every connection at once. {companies} and {links} are filled in from the data.
   links: {
-    start: 12.4,
-    title: "{companies} companies. {links} connections.",
+    start: 13.9,
+    title: "Everything is connected.",
     sub: "Who invests in, runs on, and builds on whom.",
   },
 
   // 4. Spotlight one company. Use its id from src/data/companies.json.
   // {count} is its number of connections.
   spotlight: {
-    start: 15.4,
+    start: 16.6,
     company: "nvidia",
     title: "NVIDIA: {count} connections.",
     sub: "Chips for nearly everyone on the map.",
@@ -46,14 +56,14 @@ export const script = {
 
   // 5. Closing card.
   outro: {
-    start: 20.6,
+    start: 21.6,
     title: "The US AI ecosystem",
     sub: "Energy. Chips. Infra. Models. Apps.\nAll pointing toward AGI.",
     footer: "Explore the map: link in thread",
   },
 
   // Total length of the video.
-  duration: 25,
+  duration: 26,
 };
 
 export const sec = (s: number) => Math.round(s * FPS);

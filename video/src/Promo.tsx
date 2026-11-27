@@ -32,11 +32,11 @@ for (const weight of ["400", "500", "600"]) {
   loadFont({ family: fontFamily, url: staticFile(`fonts/ibm-plex-sans-latin-${weight}-normal.woff2`), weight });
 }
 
-// Same night palette as the web app's dark mode.
-const BG = "#0e1014";
-const NODE_FILL = "#171a20";
-const TEXT = "#ece8e2";
-const MUTED = "#9aa1ab";
+// Same warm paper palette as the website (light mode).
+const BG = "#f5f3ef";
+const NODE_FILL = "#ffffff";
+const TEXT = "#1f1c18";
+const MUTED = "#6e675f";
 
 export type Layout = "square" | "wide";
 
@@ -80,10 +80,16 @@ export function Promo({ layout }: { layout: Layout }) {
 
   // ---------- Camera ----------
   // Start close on AGI, then pull out so each new ring fills the frame as it arrives.
+  // The hook: the whole map is on screen from the first frame, then the camera dives into AGI.
+  const hookEnd = sec(script.hook.end);
+  const diveEnd = sec(script.hook.end + script.hook.dive);
+  const hook = interpolate(frame, [hookEnd, diveEnd], [1, 0], { ...clamp, easing: Easing.in(Easing.cubic) });
   const keys: [number, number][] = [
-    [0, fit / 120],
+    [0, fit / 500],
+    [hookEnd, fit / 470],
+    [diveEnd, fit / 120],
     [ringStart(0) - 6, fit / 112],
-    ...rings.map((r, i): [number, number] => [ringStart(i) + Math.round(script.rings.perRing * 0.75 * fps), fit / (r.r + 62)]),
+    ...rings.map((r, i): [number, number] => [ringStart(i) + Math.round(script.rings.perRing * (i === 0 ? 0.35 : 0.75) * fps), fit / (r.r + 62)]),
     [tOutro, fit / 490],
     [tOutro + 24, fit / 620],
   ];
@@ -108,12 +114,12 @@ export function Promo({ layout }: { layout: Layout }) {
   // ---------- Links ----------
   // A short swell when every connection shows at once.
   const swell = interpolate(frame, [tLinks, tLinks + 15, tSpot - 10, tSpot + 10], [0, 1, 1, 0], clamp);
-  const linkBase = 0.16 + 0.22 * swell;
+  const linkBase = 0.2 + 0.22 * Math.max(swell, hook);
 
   // ---------- Hub ----------
   const hubPulse = 1 + 0.04 * Math.sin(frame / 9);
   const hubOn = interpolate(frame, [tOutro, tOutro + 20], [0, 1], clamp);
-  const spokesIn = appear(ringStart(0) + 10);
+  const spokesIn = Math.max(appear(ringStart(0) + 10), hook);
 
   const mix = (a: number, b: number, t: number) => a + (b - a) * t;
 
@@ -133,7 +139,7 @@ export function Promo({ layout }: { layout: Layout }) {
         <g transform={`translate(${cx},${cy + outroShift}) scale(${scale})`}>
           {/* Rings */}
           {rings.map((ring, i) => {
-            const a = appear(ringStart(i) - 4);
+            const a = Math.max(appear(ringStart(i) - 4), hook);
             return (
               <circle
                 key={ring.layer.id}
@@ -178,7 +184,7 @@ export function Promo({ layout }: { layout: Layout }) {
               const a = byId.get(l.from)!;
               const b = byId.get(l.to)!;
               const at = Math.max(appearAt(a), appearAt(b)) + 8;
-              const shown = interpolate(frame, [at, at + 14], [0, 1], clamp);
+              const shown = Math.max(interpolate(frame, [at, at + 14], [0, 1], clamp), hook);
               if (shown === 0) return null;
               const mine = l.from === spotId || l.to === spotId;
               const op = shown * mix(linkBase, mine ? 0.95 : 0.03, spot);
@@ -201,7 +207,7 @@ export function Promo({ layout }: { layout: Layout }) {
 
             {/* Companies */}
             {nodes.map((n) => {
-              const a = appear(appearAt(n));
+              const a = Math.max(appear(appearAt(n)), hook);
               if (a <= 0.001) return null;
               const style = LAYER_STYLE[n.layer];
               const wide = n.tier === "wide";
@@ -236,7 +242,7 @@ export function Promo({ layout }: { layout: Layout }) {
 
           {/* Ring name tags, at the top of each ring */}
           {rings.map((ring, i) => {
-            const a = appear(ringStart(i) + 4);
+            const a = Math.max(appear(ringStart(i) + 4), hook);
             const name = ringLabel(ring.layer);
             const w = ringTagWidth(name);
             const color = LAYER_STYLE[ring.layer.id].color;
@@ -273,7 +279,7 @@ function Backdrop({ cx, cy, scale }: { cx: number; cy: number; scale: number }) 
     <AbsoluteFill>
       <AbsoluteFill
         style={{
-          backgroundImage: "radial-gradient(rgba(255,255,255,0.06) 1.2px, transparent 1.2px)",
+          backgroundImage: "radial-gradient(rgba(60,50,40,0.09) 1.2px, transparent 1.2px)",
           backgroundSize: "22px 22px",
         }}
       />
@@ -285,7 +291,7 @@ function Backdrop({ cx, cy, scale }: { cx: number; cy: number; scale: number }) 
           width: r * 2,
           height: r * 2,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(224,122,58,0.22) 0%, rgba(224,122,58,0) 70%)",
+          background: "radial-gradient(circle, rgba(224,122,58,0.16) 0%, rgba(224,122,58,0) 70%)",
         }}
       />
     </AbsoluteFill>
@@ -299,8 +305,15 @@ type Card = { from: number; to: number; title: string; sub?: string; kicker?: st
 function useCards(): Card[] {
   const { rings, links, nodes } = useGraph();
   const s = script;
+  const fill = (t: string) => t.replace("{companies}", String(nodes.length)).replace("{links}", String(links.length));
   const spotCount = links.filter((l) => l.from === s.spotlight.company || l.to === s.spotlight.company).length;
   const cards: Card[] = [
+    {
+      from: 0,
+      to: sec(s.hook.end) + 4,
+      title: fill(s.hook.title),
+      sub: fill(s.hook.sub),
+    },
     { from: sec(s.intro.start), to: sec(s.rings.start), title: s.intro.title, sub: s.intro.sub },
     ...rings.map((ring, i) => ({
       from: sec(s.rings.start + i * s.rings.perRing),
@@ -312,8 +325,8 @@ function useCards(): Card[] {
     {
       from: sec(s.links.start),
       to: sec(s.spotlight.start),
-      title: s.links.title.replace("{companies}", String(nodes.length)).replace("{links}", String(links.length)),
-      sub: s.links.sub,
+      title: fill(s.links.title),
+      sub: fill(s.links.sub),
     },
     {
       from: sec(s.spotlight.start),
@@ -340,9 +353,18 @@ function Captions({ layout }: { layout: Layout }) {
 
   return (
     <AbsoluteFill>
+      {/* A soft fade behind the text, so the map never runs into it */}
+      <div
+        style={
+          square
+            ? { position: "absolute", left: 0, right: 0, top: 0, height: 250, background: `linear-gradient(${BG} 55%, ${BG}00)` }
+            : { position: "absolute", left: 0, top: 0, bottom: 0, width: width * 0.45, background: `linear-gradient(90deg, ${BG} 70%, ${BG}00)` }
+        }
+      />
       {cards.map((c, i) => {
         if (frame < c.from - 2 || frame > c.to + 2) return null;
-        const inP = spring({ frame: frame - c.from, fps, config: { damping: 200 }, durationInFrames: 12 });
+        // The first card is on screen from frame 0, so the post's thumbnail has the text.
+        const inP = c.from === 0 ? 1 : spring({ frame: frame - c.from, fps, config: { damping: 200 }, durationInFrames: 12 });
         const outP = interpolate(frame, [c.to - 8, c.to], [0, 1], clamp);
         const op = inP * (1 - outP);
         const y = (1 - inP) * 18 - outP * 10;
