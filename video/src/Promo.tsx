@@ -252,7 +252,7 @@ export function Promo({ layout }: { layout: Layout }) {
                   stroke={color}
                   strokeDasharray={LINK_DASH[l.type]}
                   fill="none"
-                  strokeWidth={mine ? mix(1, 1.8, spot) : 1 + 1.6 * glow}
+                  strokeWidth={mine ? mix(1.3, 2.2, spot) : 1.3 + 1.6 * glow}
                   opacity={op}
                 >
                   <path d={first} markerEnd={`url(#arrow-${color.slice(1)})`} />
@@ -281,7 +281,7 @@ export function Promo({ layout }: { layout: Layout }) {
                       <text
                         y={size + (isSpot ? 24 : 16)}
                         fill={style.color}
-                        fontSize={isSpot ? mix(12, 24, spot) : 12}
+                        fontSize={isSpot ? mix(14, 26, spot) : 14}
                         fontWeight={isSpot ? 600 : 500}
                         textAnchor="middle"
                         paintOrder="stroke"

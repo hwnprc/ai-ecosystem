@@ -2,7 +2,7 @@ import path from "node:path";
 import { Config } from "@remotion/cli/config";
 
 Config.setVideoImageFormat("jpeg");
-Config.setJpegQuality(92);
+Config.setJpegQuality(100);
 Config.setCodec("h264");
 Config.setPixelFormat("yuv420p"); // plays everywhere, including X
 Config.setColorSpace("bt709");

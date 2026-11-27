@@ -28,6 +28,10 @@ npm run render:wide   # writes out/ai-ecosystem-wide.mp4
 
 The first render downloads a headless Chrome. That takes a minute once.
 
+For sharp thin lines and small text, `render` draws every frame at twice the size
+(2160 px), then scales it down to 1080 with a high-quality filter and a high bitrate.
+The 2x master stays in `out/raw-square.mp4` if you ever need it.
+
 ## Change it
 
 Almost everything you will want to change is in `src/script.ts`:
