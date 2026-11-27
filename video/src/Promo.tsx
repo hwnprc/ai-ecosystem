@@ -48,14 +48,34 @@ function useGraph() {
     const { rings, nodes } = layoutGraph(graphData.layers, graphData.companies);
     const byId = new Map(nodes.map((n) => [n.id, n]));
     const links = graphData.links.filter((l) => byId.has(l.from) && byId.has(l.to));
-    return { rings, nodes, byId, links };
+    // How many hops each company is from the biggest hubs. The opening ripple spreads
+    // out from these hubs one hop at a time, so you can see who influences whom.
+    const nbrs = new Map<string, string[]>();
+    for (const l of links) {
+      nbrs.set(l.from, [...(nbrs.get(l.from) ?? []), l.to]);
+      nbrs.set(l.to, [...(nbrs.get(l.to) ?? []), l.from]);
+    }
+    const depth = new Map<string, number>(script.hook.sources.filter((id) => byId.has(id)).map((id) => [id, 0]));
+    let wave = [...depth.keys()];
+    while (wave.length) {
+      const next: string[] = [];
+      for (const id of wave)
+        for (const n of nbrs.get(id) ?? [])
+          if (!depth.has(n)) {
+            depth.set(n, depth.get(id)! + 1);
+            next.push(n);
+          }
+      wave = next;
+    }
+    const maxDepth = Math.max(0, ...depth.values());
+    return { rings, nodes, byId, links, depth, maxDepth };
   }, []);
 }
 
 export function Promo({ layout }: { layout: Layout }) {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
-  const { rings, nodes, byId, links } = useGraph();
+  const { rings, nodes, byId, links, depth, maxDepth } = useGraph();
 
   // Where the graph sits in the frame, and how many pixels the full map gets.
   const square = layout === "square";
@@ -116,6 +136,28 @@ export function Promo({ layout }: { layout: Layout }) {
   const swell = interpolate(frame, [tLinks, tLinks + 15, tSpot - 10, tSpot + 10], [0, 1, 1, 0], clamp);
   const linkBase = 0.2 + 0.22 * Math.max(swell, hook);
 
+  // ---------- Ripple ----------
+  // Pulses leave the hubs, run along the links, and light up each company they reach,
+  // which sends the next pulse on. It plays in the opening and again on "Everything is connected".
+  const HOP = script.hook.hop * fps;
+  const period = HOP * (maxDepth + 0.6);
+  const live = Math.max(hook, swell);
+  const phase = (frame + HOP * 0.6) % period; // start a little in, so the first frame already shows pulses
+  // 0..1 progress of the pulse along a link that starts at hop d, or -1 when no pulse is on it.
+  const travel = (d: number) => {
+    const t = (phase - d * HOP) / HOP;
+    return t >= 0 && t <= 1 ? t : -1;
+  };
+  // A short flash when a pulse reaches a company.
+  const flash = (id: string) => {
+    const d = depth.get(id);
+    if (d === undefined) return 0;
+    const dt = phase - d * HOP;
+    return Math.exp(-((dt / (HOP * 0.35)) ** 2)) * live;
+  };
+  // The whole map turns slowly in the opening, then settles before the rings rebuild.
+  const hookTurn = interpolate(frame, [0, diveEnd], [-14, 0], { ...clamp, easing: Easing.out(Easing.quad) });
+
   // ---------- Hub ----------
   const hubPulse = 1 + 0.04 * Math.sin(frame / 9);
   const hubOn = interpolate(frame, [tOutro, tOutro + 20], [0, 1], clamp);
@@ -153,7 +195,7 @@ export function Promo({ layout }: { layout: Layout }) {
             );
           })}
 
-          <g transform={`rotate(${rotation})`}>
+          <g transform={`rotate(${rotation + hookTurn})`}>
             {/* Spokes: the model labs head straight for AGI. They flow inward at the end. */}
             {nodes
               .filter((n) => n.layer === "models" && n.tier !== "wide")
@@ -187,7 +229,21 @@ export function Promo({ layout }: { layout: Layout }) {
               const shown = Math.max(interpolate(frame, [at, at + 14], [0, 1], clamp), hook);
               if (shown === 0) return null;
               const mine = l.from === spotId || l.to === spotId;
-              const op = shown * mix(linkBase, mine ? 0.95 : 0.03, spot);
+              // Direction of the pulse: from the end nearer the hubs to the farther one.
+              const da = depth.get(a.id) ?? 99;
+              const db = depth.get(b.id) ?? 99;
+              const fwd = da <= db;
+              const t = da === db || live === 0 ? -1 : travel(Math.min(da, db));
+              const glow = t >= 0 ? Math.sin(Math.PI * t) * live : 0;
+              const op = shown * mix(Math.min(1, linkBase + 0.6 * glow), mine ? 0.95 : 0.03, spot);
+              // Where the pulse dot is, on the same curve as the link.
+              let dot: { x: number; y: number } | null = null;
+              if (t >= 0 && live > 0.05) {
+                const [p, q] = fwd ? [a, b] : [b, a];
+                const c = { x: ((a.x + b.x) / 2) * 0.7, y: ((a.y + b.y) / 2) * 0.7 };
+                const u = 1 - t;
+                dot = { x: u * u * p.x + 2 * u * t * c.x + t * t * q.x, y: u * u * p.y + 2 * u * t * c.y + t * t * q.y };
+              }
               const color = LAYER_STYLE[a.layer].color;
               const [first, second] = edgeHalves(a, b);
               return (
@@ -196,11 +252,12 @@ export function Promo({ layout }: { layout: Layout }) {
                   stroke={color}
                   strokeDasharray={LINK_DASH[l.type]}
                   fill="none"
-                  strokeWidth={mine ? mix(1, 1.8, spot) : 1}
+                  strokeWidth={mine ? mix(1, 1.8, spot) : 1 + 1.6 * glow}
                   opacity={op}
                 >
                   <path d={first} markerEnd={`url(#arrow-${color.slice(1)})`} />
                   <path d={second} />
+                  {dot && <circle cx={dot.x} cy={dot.y} r={3.2} fill={color} stroke="none" />}
                 </g>
               );
             })}
@@ -218,7 +275,7 @@ export function Promo({ layout }: { layout: Layout }) {
               const showLabel = !wide && (spot < 0.5 || lit.has(n.id));
               return (
                 <g key={n.id} transform={`translate(${n.x},${n.y})`} opacity={op}>
-                  <g transform={`rotate(${-rotation}) scale(${a})`}>
+                  <g transform={`rotate(${-(rotation + hookTurn)}) scale(${a * (1 + 0.45 * flash(n.id))})`}>
                     <NodeMark shape={style.shape} size={size} color={style.color} fill={fill} strokeWidth={wide ? 1.2 : isSpot ? 2.6 : 1.6} />
                     {showLabel && (
                       <text

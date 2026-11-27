@@ -1,12 +1,12 @@
 # Promo video
 
-A 26-second video of the AI Ecosystem Graph, made with [Remotion](https://www.remotion.dev).
+A 28-second video of the AI Ecosystem Graph, made with [Remotion](https://www.remotion.dev).
 It reads the same data as the site (`src/data`) and uses the same ring layout
 (`src/lib/graphLayout.ts`). When the data changes, a new render shows the new map.
 
 What it shows:
 
-1. The whole map from the first frame, to grab attention. Then the camera dives into AGI.
+1. The whole map, alive: pulses ripple out from the biggest hubs along the links. Then the camera dives into AGI.
 2. The camera pulls out one ring at a time: models, infrastructure, chips, energy, apps.
 3. Every connection appears at once.
 4. The dial turns to spotlight one company (NVIDIA) and its links.
