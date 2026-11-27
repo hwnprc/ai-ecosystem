@@ -1,0 +1,25 @@
+{
+  "name": "ai-ecosystem-video",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Short promo video of the AI Ecosystem Graph, made with Remotion.",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render Promo out/raw-square.mp4 --scale=2 --crf=12 && remotion ffmpeg -y -loglevel error -i out/raw-square.mp4 -vf scale=1080:1080:flags=lanczos -c:v libx264 -crf 15 -preset slow -pix_fmt yuv420p -movflags +faststart out/ai-ecosystem-square.mp4",
+    "render:wide": "remotion render PromoWide out/raw-wide.mp4 --scale=2 --crf=12 && remotion ffmpeg -y -loglevel error -i out/raw-wide.mp4 -vf scale=1920:1080:flags=lanczos -c:v libx264 -crf 15 -preset slow -pix_fmt yuv420p -movflags +faststart out/ai-ecosystem-wide.mp4",
+    "still": "remotion still Promo out/still.png --frame=600"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.542",
+    "@remotion/fonts": "4.0.542",
+    "d3": "7.9.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "remotion": "4.0.542"
+  },
+  "devDependencies": {
+    "@types/d3": "7.4.3",
+    "@types/react": "19.2.2",
+    "typescript": "5.9.3"
+  }
+}
